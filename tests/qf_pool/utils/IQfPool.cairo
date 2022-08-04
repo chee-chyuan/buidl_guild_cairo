@@ -59,4 +59,7 @@ namespace IQfPool:
         link: felt*
     ) -> (ipfs_res_link_len: felt, ipfs_res_link: felt*):
     end
+
+    func vote(project_id: felt, amount: Uint256, voter_addr: felt):
+    end
 end

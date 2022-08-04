@@ -16,6 +16,7 @@ end
 func initalized_matched_value() -> (is_init: felt):
 end
 
+# this is the current project id that will be used, after that it will get incremented
 @storage_var
 func current_project_id() -> (next: felt):
 end
@@ -345,6 +346,7 @@ func vote{
 
     Ownable.assert_only_owner()
     assert_only_within_voting_period()
+    assert_project_exist(project_id)
     
     # transfer fund to this contract by owner before calling this function
     # thus, amount passed in can be trusted
@@ -384,6 +386,12 @@ func vote{
                                                              square_sum_c_sqrt=square_sum_c_sqrt_updated
                                                             )
                                  )
+
+        # update total_project_contributed_fund
+        let (old_total_project_contributed_fund) = total_project_contributed_fund.read()
+        let (new_total_project_contributed_fund, add_carry) = uint256_add(old_total_project_contributed_fund, amount)
+        assert add_carry = 0
+        total_project_contributed_fund.write(new_total_project_contributed_fund)
     end
 
     # revoked reference related reassignment
@@ -413,6 +421,20 @@ func vote{
     assert carry = Uint256(0, 0) # we dont support too large numbers
 
     project_accumulator.write(project_id=project_id, value=ProjectAccumulator(sum_c_new, sum_c_sqrt_new, square_sum_c_sqrt_new))
+    return ()
+end
+
+func assert_project_exist{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(project_id: felt):
+
+     with_attr error_message("Project does not exist"):
+            let (current_id) = current_project_id.read()
+            assert_le(project_id, current_id)
+     end
+
     return ()
 end
 
