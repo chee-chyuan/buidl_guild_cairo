@@ -1,0 +1,22 @@
+["protostar.config"]
+protostar_version = "0.3.0"
+
+["protostar.project"]
+libs_path = "lib"
+
+["protostar.shared_command_configs"]
+cairo_path = ["./lib/cairo_contracts/src", "src"]
+
+[profile.ci.protostar.shared_command_configs]
+no_color=true
+cairo_path = ["./lib/cairo_contracts/src"]
+target = "src"
+
+["protostar.contracts"]
+main = [
+    "src/main.cairo",
+]
+
+qf_pool = [
+    "src/qf_pool.cairo",
+]

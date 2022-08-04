@@ -1,0 +1,382 @@
+[
+    {
+        "members": [
+            {
+                "name": "c",
+                "offset": 0,
+                "type": "Uint256"
+            },
+            {
+                "name": "c_sqrt",
+                "offset": 2,
+                "type": "Uint256"
+            }
+        ],
+        "name": "ProjectVote",
+        "size": 4,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "sum_c",
+                "offset": 0,
+                "type": "Uint256"
+            },
+            {
+                "name": "sum_c_sqrt",
+                "offset": 2,
+                "type": "Uint256"
+            },
+            {
+                "name": "square_sum_c_sqrt",
+                "offset": 4,
+                "type": "Uint256"
+            }
+        ],
+        "name": "ProjectAccumulator",
+        "size": 6,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "ipfs_link_len",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "owner",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "ProjectInfo",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "data": [
+            {
+                "name": "previousOwner",
+                "type": "felt"
+            },
+            {
+                "name": "newOwner",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_erc20_addr",
+                "type": "felt"
+            },
+            {
+                "name": "core_contract_addr",
+                "type": "felt"
+            },
+            {
+                "name": "_vote_start_time",
+                "type": "felt"
+            },
+            {
+                "name": "_vote_end_time",
+                "type": "felt"
+            },
+            {
+                "name": "_stream_start_time",
+                "type": "felt"
+            },
+            {
+                "name": "_stream_end_time",
+                "type": "felt"
+            }
+        ],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "get_current_project_id",
+        "outputs": [
+            {
+                "name": "id",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_erc20_addr",
+        "outputs": [
+            {
+                "name": "addr",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_owner",
+        "outputs": [
+            {
+                "name": "owner",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "voter_addr",
+                "type": "felt"
+            }
+        ],
+        "name": "get_project_vote",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "ProjectVote"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_project_accumulator",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "ProjectAccumulator"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_total_project_contributed_fund",
+        "outputs": [
+            {
+                "name": "total",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_total_match",
+        "outputs": [
+            {
+                "name": "matched",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_vote_start_time",
+        "outputs": [
+            {
+                "name": "time",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_vote_end_time",
+        "outputs": [
+            {
+                "name": "time",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_stream_start_time",
+        "outputs": [
+            {
+                "name": "time",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_stream_end_time",
+        "outputs": [
+            {
+                "name": "time",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_claimed_amount_by_project",
+        "outputs": [
+            {
+                "name": "amount",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "init_matched_pool",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "owner",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_link_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_link",
+                "type": "felt*"
+            }
+        ],
+        "name": "add_project",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_project_info",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "ProjectInfo"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "current_index",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "link_len",
+                "type": "felt"
+            },
+            {
+                "name": "link",
+                "type": "felt*"
+            }
+        ],
+        "name": "get_project_ipfs_link",
+        "outputs": [
+            {
+                "name": "ipfs_res_link_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_res_link",
+                "type": "felt*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            },
+            {
+                "name": "voter_addr",
+                "type": "felt"
+            }
+        ],
+        "name": "vote",
+        "outputs": [],
+        "type": "function"
+    }
+]
