@@ -38,6 +38,15 @@ namespace IQfPool:
     func get_stream_end_time() -> (res: felt):
     end
 
+    func get_claimed_amount_by_project(project_id: felt) -> (res: Uint256):
+    end
+
+    func get_project_verification(project_id: felt) -> (res: Uint256):
+    end
+
+    func get_project_verification_ipfs(project_id: felt, index: felt) -> (res: felt):
+    end
+
     func init_matched_pool():
     end
 

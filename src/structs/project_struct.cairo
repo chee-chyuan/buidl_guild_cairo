@@ -16,3 +16,11 @@ struct ProjectAccumulator:
     member sum_c_sqrt: Uint256
     member square_sum_c_sqrt: Uint256
 end
+
+# for users to submit proof of completion
+# and for admin to approve claimmable percentage
+struct ProjectVerification:
+    member submission_ipfs_link_len: felt
+    member admin_latest_approved_percentage: felt
+    member is_approved_latest_submission: felt
+end
