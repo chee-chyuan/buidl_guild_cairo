@@ -26,6 +26,10 @@ func project_info(project_id: felt) -> (info: ProjectInfo):
 end
 
 @storage_var
+func reverse_user_project_id(owner: felt) -> (project_id: felt):
+end
+
+@storage_var
 func project_ipfs_link(project_id: felt, index: felt) -> (link_partial: felt):
 end
 
@@ -84,6 +88,7 @@ func constructor{
     vote_end_time.write(_vote_end_time)
     stream_start_time.write(_stream_start_time)
     stream_end_time.write(_stream_end_time)
+    current_project_id.write(1) # start from id = 1
 
     return ()
 end
@@ -240,7 +245,8 @@ func add_project{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
-    }(owner: felt, 
+    }(
+      owner: felt, 
       ipfs_link_len: felt, 
       ipfs_link: felt*
     ):
@@ -248,11 +254,18 @@ func add_project{
     # allows project to be added at any time
     # we wont be checking for duplicates ipfs_link
 
+    # check if owner has created a pool before
+    with_attr error_message("Owner already has a project in the current pool"):
+            let (pool_id) = reverse_user_project_id.read(owner)
+            assert pool_id = 0
+     end
+
     let info = ProjectInfo(ipfs_link_len=ipfs_link_len, owner=owner)
     let (current_id) = current_project_id.read()
     current_project_id.write(current_id + 1)
 
     project_info.write(project_id=current_id, value=info)
+    reverse_user_project_id.write(owner, current_id)
     store_ipfs_link(project_id=current_id, current_index=0, ipfs_link_len=ipfs_link_len, ipfs_link=ipfs_link)
     return()
 end
@@ -291,6 +304,17 @@ func get_project_info{
     }(project_id: felt) -> (res: ProjectInfo):
     let (res) = project_info.read(project_id)
     return (res=res)
+end
+
+@view 
+func get_reverse_user_project_id{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(owner:felt) -> (project_id: felt):
+    let (res) = reverse_user_project_id.read(owner)
+
+    return (project_id=res)
 end
 
 @view

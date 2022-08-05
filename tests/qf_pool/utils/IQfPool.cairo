@@ -51,6 +51,9 @@ namespace IQfPool:
     func get_project_info(project_id: felt) -> (res: ProjectInfo):
     end
 
+    func get_reverse_user_project_id(owner:felt) -> (project_id: felt):
+    end
+
     func get_project_ipfs_link(
         project_id: felt, 
         current_index: felt,

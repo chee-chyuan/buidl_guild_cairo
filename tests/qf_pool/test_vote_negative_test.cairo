@@ -29,25 +29,6 @@ func __setup__():
     return ()
 end
 
-func add_project{
-        syscall_ptr : felt*,
-        pedersen_ptr : HashBuiltin*,
-        range_check_ptr,
-    }():
-    tempvar contract_address_add_project
-    %{
-        ids.contract_address_add_project = context.contract_address
-    %}
-
-    let link_len = 1
-    let (link) = alloc()
-    assert link[0] = 'a'
-
-    IQfPool.add_project(contract_address=contract_address_add_project, owner=PROJECT_OWNER, ipfs_link_len=link_len, ipfs_link=link)
-
-    return ()
-end
-
 
 # cannot vote for non existing project
 @view
@@ -157,7 +138,3 @@ func test_cannot_vote_by_non_owner{
 
     return ()
 end
-
-# check vote result for new voter to the project
-
-# check vote result for same voter to the project

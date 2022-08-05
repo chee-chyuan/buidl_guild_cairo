@@ -45,8 +45,11 @@ func test_add_project{
     assert link[1] = 'b'
     assert link[2] = 'c'
 
+    let (reverse_owner_project_id_before) = IQfPool.get_reverse_user_project_id(contract_address=contract_address, owner=PROJECT_OWNER)
+    assert reverse_owner_project_id_before = 0
+
     let (current_id_before) = IQfPool.get_current_project_id(contract_address=contract_address)
-    assert current_id_before = 0
+    assert current_id_before = 1
 
     IQfPool.add_project(contract_address=contract_address, owner=PROJECT_OWNER, ipfs_link_len=link_len, ipfs_link=link)
 
@@ -57,13 +60,13 @@ func test_add_project{
     %}
 
     let (current_id_after) = IQfPool.get_current_project_id(contract_address=contract_address)
-    assert current_id_after = 1
+    assert current_id_after = 2
 
     let (ipfs_link) = alloc()
 
     let (ipfs_link_len, ipfs_link) = IQfPool.get_project_ipfs_link(
                                         contract_address=contract_address,
-                                        project_id=0,
+                                        project_id=1,
                                         current_index=0,
                                         ipfs_len=link_len,
                                         link_len=0,
@@ -74,6 +77,46 @@ func test_add_project{
     assert ipfs_link[0] = 'a'
     assert ipfs_link[1] = 'b'
     assert ipfs_link[2] = 'c'
+
+    # revoked reference ==, and im too lazy to use local
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+    %}
+
+    let (reverse_owner_project_id_after) = IQfPool.get_reverse_user_project_id(contract_address=contract_address, owner=PROJECT_OWNER)
+    assert reverse_owner_project_id_after = 1
+
+    return ()
+end
+
+@view
+func test_only_one_project_per_owner{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }():
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+    %}
+
+    let link_len = 1
+    let (link) = alloc()
+    assert link[0] = 'a'
+    IQfPool.add_project(contract_address=contract_address, owner=PROJECT_OWNER, ipfs_link_len=link_len, ipfs_link=link)
+
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+    %}
+
+    let link_len = 1
+    let (link) = alloc()
+    assert link[0] = 'a'
+
+    %{ expect_revert(error_message="Owner already has a project in the current pool") %}
+    IQfPool.add_project(contract_address=contract_address, owner=PROJECT_OWNER, ipfs_link_len=link_len, ipfs_link=link)
 
     return ()
 end
