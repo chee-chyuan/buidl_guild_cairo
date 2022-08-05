@@ -157,3 +157,90 @@ func test_vote_result_new_voter{
 end
 
 # check vote result for same voter to the project
+@view 
+func test_vote_result_repeat_voter{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }():
+    alloc_locals
+    local syscall_ptr_temp: felt*
+    syscall_ptr_temp = syscall_ptr
+
+    local contract_address_local: felt
+
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+        stop_warp = warp(ids.VOTE_TIME_START + 1, target_contract_address=ids.contract_address) 
+        stop_prank_callable = start_prank(ids.OWNER_ADDRESS, target_contract_address=ids.contract_address)
+    %}
+    contract_address_local = contract_address
+
+    add_project(PROJECT_OWNER)
+
+    # user add 5 to project id = 1
+    # same user add 45 to project id = 1
+
+    # first vote
+    IQfPool.vote(contract_address=contract_address_local, project_id=1, amount=Uint256(5,0), voter_addr=1)
+
+    # check project_vote
+    let (project_vote) = IQfPool.get_project_vote(contract_address=contract_address_local, project_id=1, voter_addr=1)
+    let (is_project_vote_c_equal) = uint256_eq(Uint256(5,0), project_vote.c)
+    assert is_project_vote_c_equal = 1
+
+    let sqrt_five = Uint256(2,0) # precision are rounded down
+    let (is_project_vote_sqrt_c_equal) = uint256_eq(sqrt_five, project_vote.c_sqrt)
+    assert is_project_vote_sqrt_c_equal = 1
+
+    # check project_accumulator
+    let (project_accumulator) = IQfPool.get_project_accumulator(contract_address=contract_address_local, project_id=1)
+    let (is_sum_c_equal) = uint256_eq(Uint256(5,0), project_accumulator.sum_c)
+    assert is_sum_c_equal = 1
+
+    let (is_sum_c_sqrt_equal) = uint256_eq(sqrt_five, project_accumulator.sum_c_sqrt)
+    assert is_sum_c_sqrt_equal = 1
+
+    let (is_square_sum_c_sqrt_equal) = uint256_eq(Uint256(4,0), project_accumulator.square_sum_c_sqrt)
+    assert is_square_sum_c_sqrt_equal = 1
+
+    # check total_project_contributed_fund
+    let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
+    let (is_total_project_contributed_fund_after) = uint256_eq(Uint256(5,0), total_project_contributed_fund_after)
+    assert is_total_project_contributed_fund_after = 1
+
+    # second vote
+    IQfPool.vote(contract_address=contract_address_local, project_id=1, amount=Uint256(45,0), voter_addr=1)
+
+    # check project_vote
+    let (project_vote) = IQfPool.get_project_vote(contract_address=contract_address_local, project_id=1, voter_addr=1)
+    let (is_project_vote_c_equal) = uint256_eq(Uint256(50,0), project_vote.c)
+    assert is_project_vote_c_equal = 1
+
+    let sqrt_fifty = Uint256(7,0) # precision are rounded down
+    let (is_project_vote_sqrt_c_equal) = uint256_eq(sqrt_fifty, project_vote.c_sqrt)
+    assert is_project_vote_sqrt_c_equal = 1
+
+    # check project_accumulator
+    let (project_accumulator) = IQfPool.get_project_accumulator(contract_address=contract_address_local, project_id=1)
+    let (is_sum_c_equal) = uint256_eq(Uint256(50,0), project_accumulator.sum_c)
+    assert is_sum_c_equal = 1
+
+    let (is_sum_c_sqrt_equal) = uint256_eq(sqrt_fifty, project_accumulator.sum_c_sqrt)
+    assert is_sum_c_sqrt_equal = 1
+
+    let (is_square_sum_c_sqrt_equal) = uint256_eq(Uint256(49,0), project_accumulator.square_sum_c_sqrt)
+    assert is_square_sum_c_sqrt_equal = 1
+
+    # check total_project_contributed_fund
+    let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
+    let (is_total_project_contributed_fund_after) = uint256_eq(Uint256(50,0), total_project_contributed_fund_after)
+    assert is_total_project_contributed_fund_after = 1
+
+    %{
+        stop_warp()
+        stop_prank_callable()
+    %}
+    return ()
+end

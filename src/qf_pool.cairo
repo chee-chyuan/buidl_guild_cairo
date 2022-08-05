@@ -348,7 +348,6 @@ func get_project_ipfs_link{
     return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)                          
 end
 
-
 # this function can only be called by the 'owner' (i.e the contract that deploys this contract)
 @external
 func vote{
@@ -380,7 +379,7 @@ func vote{
     # update project acummulator
     let (is_c_zero) = uint256_eq(current_project_vote.c, Uint256(0,0))
 
-    if is_c_zero == 1:
+    if is_c_zero == 0:
         c_old.low = current_project_vote.c.low
         c_old.high = current_project_vote.c.high
 
@@ -403,22 +402,17 @@ func vote{
                                                             )
                                  )
 
-        # update total_project_contributed_fund
-        let (old_total_project_contributed_fund) = total_project_contributed_fund.read()
-        let (new_total_project_contributed_fund, add_carry) = uint256_add(old_total_project_contributed_fund, amount)
-        assert add_carry = 0
-        total_project_contributed_fund.write(new_total_project_contributed_fund)
-
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
     else:
+        c_old.low = 0
+        c_old.high = 0
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
     end
 
-    # get current ProjectAccumulator again? (can we avoid this?)
     let (current_project_accumulator) = project_accumulator.read(project_id=project_id)
 
     # update c and c_sqrt. if previous has value, c_new = c_old + c_added (amount)
@@ -440,6 +434,13 @@ func vote{
     assert carry = Uint256(0, 0) # we dont support too large numbers
 
     project_accumulator.write(project_id=project_id, value=ProjectAccumulator(sum_c_new, sum_c_sqrt_new, square_sum_c_sqrt_new))
+    
+    # update total_project_contributed_fund
+    let (old_total_project_contributed_fund) = total_project_contributed_fund.read()
+    let (new_total_project_contributed_fund, add_carry) = uint256_add(old_total_project_contributed_fund, amount)
+    assert add_carry = 0
+    total_project_contributed_fund.write(new_total_project_contributed_fund)
+
     return ()
 end
 
