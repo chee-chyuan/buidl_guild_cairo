@@ -348,31 +348,6 @@ func get_project_ipfs_link{
     return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)                          
 end
 
-@external
-func vote2{
-        syscall_ptr : felt*,
-        pedersen_ptr : HashBuiltin*,
-        range_check_ptr,
-    }(project_id: felt, amount: Uint256, voter_addr: felt):
-
-    alloc_locals
-
-    local syscall_ptr_temp: felt*
-    syscall_ptr_temp = syscall_ptr
-
-    local pedersen_ptr_temp: HashBuiltin*
-    pedersen_ptr_temp = pedersen_ptr
-
-    local range_check_ptr_temp
-    range_check_ptr_temp = range_check_ptr
-
-    local c_old: Uint256
-
-    Ownable.assert_only_owner()
-    assert_only_within_voting_period()
-    assert_project_exist(project_id)
-    return ()
-end
 
 # this function can only be called by the 'owner' (i.e the contract that deploys this contract)
 @external
@@ -382,15 +357,6 @@ func vote{
         range_check_ptr,
     }(project_id: felt, amount: Uint256, voter_addr: felt):
     alloc_locals
-
-    local syscall_ptr_temp: felt*
-    syscall_ptr_temp = syscall_ptr
-
-    local pedersen_ptr_temp: HashBuiltin*
-    pedersen_ptr_temp = pedersen_ptr
-
-    local range_check_ptr_temp
-    range_check_ptr_temp = range_check_ptr
 
     local c_old: Uint256
 
@@ -442,12 +408,15 @@ func vote{
         let (new_total_project_contributed_fund, add_carry) = uint256_add(old_total_project_contributed_fund, amount)
         assert add_carry = 0
         total_project_contributed_fund.write(new_total_project_contributed_fund)
-    end
 
-    # revoked reference related reassignment
-    let syscall_ptr = syscall_ptr_temp
-    let pedersen_ptr = pedersen_ptr_temp
-    let range_check_ptr = range_check_ptr_temp
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
 
     # get current ProjectAccumulator again? (can we avoid this?)
     let (current_project_accumulator) = project_accumulator.read(project_id=project_id)
