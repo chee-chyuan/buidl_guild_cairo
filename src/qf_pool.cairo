@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.math import assert_lt, assert_le
+from starkware.cairo.common.math import assert_lt, assert_le, assert_not_zero
 from starkware.starknet.common.syscalls import get_contract_address, get_block_timestamp
 from starkware.cairo.common.uint256 import Uint256, uint256_eq, uint256_sub, uint256_mul, uint256_sqrt, uint256_add
 from openzeppelin.access.ownable.library import Ownable
@@ -479,6 +479,10 @@ func assert_project_exist{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
     }(project_id: felt):
+
+     with_attr error_message("Project id cannot be zero"):
+            assert_not_zero(project_id)
+     end
 
      with_attr error_message("Project does not exist"):
             let (current_id) = current_project_id.read()

@@ -29,6 +29,35 @@ func __setup__():
     return ()
 end
 
+#cannot vote for project id = 0
+@view
+func test_cannot_vote_for_project_id_zero{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }():
+
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+        stop_warp = warp(ids.VOTE_TIME_START + 1, target_contract_address=ids.contract_address) 
+        stop_prank_callable = start_prank(ids.OWNER_ADDRESS, target_contract_address=ids.contract_address)
+    %}
+
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+        expect_revert(error_message="Project id cannot be zero")
+    %}
+    IQfPool.vote(contract_address=contract_address, project_id=0, amount=Uint256(1,0), voter_addr=1)
+
+    %{
+        stop_warp()
+        stop_prank_callable()
+    %}
+
+    return ()
+end
 
 # cannot vote for non existing project
 @view
@@ -50,7 +79,7 @@ func test_cannot_vote_non_existing_project{
         ids.contract_address = context.contract_address
         expect_revert(error_message="Project does not exist")
     %}
-    IQfPool.vote(contract_address=contract_address, project_id=0, amount=Uint256(1,0), voter_addr=1)
+    IQfPool.vote(contract_address=contract_address, project_id=1, amount=Uint256(1,0), voter_addr=1)
 
     %{
         stop_warp()
