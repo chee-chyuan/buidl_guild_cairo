@@ -1,6 +1,6 @@
 %lang starknet
 from starkware.cairo.common.uint256 import Uint256
-from src.structs.project_struct import ProjectInfo, ProjectAccumulator, ProjectVote
+from src.structs.project_struct import ProjectInfo, ProjectAccumulator, ProjectVote, ProjectVerification
 
 @contract_interface
 namespace IQfPool:
@@ -41,7 +41,7 @@ namespace IQfPool:
     func get_claimed_amount_by_project(project_id: felt) -> (res: Uint256):
     end
 
-    func get_project_verification(project_id: felt) -> (res: Uint256):
+    func get_project_verification(project_id: felt) -> (res: ProjectVerification):
     end
 
     func get_project_verification_ipfs(project_id: felt, index: felt) -> (res: felt):

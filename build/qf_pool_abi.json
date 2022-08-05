@@ -58,6 +58,28 @@
     {
         "members": [
             {
+                "name": "submission_ipfs_link_len",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "admin_latest_approved_percentage",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "is_approved_latest_submission",
+                "offset": 2,
+                "type": "felt"
+            }
+        ],
+        "name": "ProjectVerification",
+        "size": 3,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
                 "name": "ipfs_link_len",
                 "offset": 0,
                 "type": "felt"
@@ -85,6 +107,17 @@
         ],
         "keys": [],
         "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "project_verification_submission",
         "type": "event"
     },
     {
@@ -282,6 +315,44 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_project_verification",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "ProjectVerification"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "index",
+                "type": "felt"
+            }
+        ],
+        "name": "get_project_verification_ipfs",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "init_matched_pool",
         "outputs": [],
@@ -318,6 +389,23 @@
             {
                 "name": "res",
                 "type": "ProjectInfo"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "owner",
+                "type": "felt"
+            }
+        ],
+        "name": "get_reverse_user_project_id",
+        "outputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
             }
         ],
         "stateMutability": "view",
@@ -376,6 +464,51 @@
             }
         ],
         "name": "vote",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_owner",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs",
+                "type": "felt*"
+            }
+        ],
+        "name": "submit_work_proof",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "approved_percentage",
+                "type": "felt"
+            }
+        ],
+        "name": "admin_verify_work",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_owner",
+                "type": "felt"
+            }
+        ],
+        "name": "claim",
         "outputs": [],
         "type": "function"
     }

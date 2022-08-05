@@ -6,7 +6,7 @@ from starkware.starknet.common.syscalls import get_contract_address, get_block_t
 from starkware.cairo.common.uint256 import Uint256, uint256_eq, uint256_sub, uint256_mul, uint256_sqrt, uint256_add
 from openzeppelin.access.ownable.library import Ownable
 from openzeppelin.token.erc20.IERC20 import IERC20
-from structs.project_struct import ProjectInfo, ProjectVote, ProjectAccumulator
+from structs.project_struct import ProjectInfo, ProjectVote, ProjectAccumulator, ProjectVerification
 
 @storage_var
 func erc20_addr() -> (addr: felt):
@@ -235,7 +235,7 @@ func get_project_verification{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
-}(project_id: felt) -> (res: Uint256):
+}(project_id: felt) -> (res: ProjectVerification):
     let (res) = project_verification.read(project_id=project_id)
     return (res=res)
 end
@@ -524,27 +524,29 @@ func submit_work_proof{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
     }(project_owner: felt, ipfs_len: felt, ipfs: felt*):
+    alloc_locals
 
     Ownable.assert_only_owner()
 
     # check project id exist for the owner
-    let (project_id) = reverse_user_project_id(project_owner)
+    let (id) = reverse_user_project_id.read(project_owner)
+    local id = id
 
     with_attr error_message("Owner has no project"):
-           assert_not_zero(project_id)
+           assert_not_zero(id)
     end
 
-    let (previous_project_verification) = project_verification.read(project_id=project_id)
+    let (previous_project_verification) = project_verification.read(project_id=id)
     # update ipfs_len
     # set is_approved_latest_submission to 0
     let new_project_verification = ProjectVerification(ipfs_len, previous_project_verification.admin_latest_approved_percentage, 0)
-    project_verification.write(project_id=project_id, value=new_project_verification)
+    project_verification.write(project_id=id, value=new_project_verification)
 
     # set ipfs
-    store_submission_ipfs(project_id=project_id, current_index=0, ipfs_link_len=ipfs_len, ipfs_link=ipfs)
+    store_submission_ipfs(project_id=id, current_index=0, ipfs_link_len=ipfs_len, ipfs_link=ipfs)
 
     # we can emit event in case we want to alert admin (not in hackathon)
-    project_verification_submission.emit(project_id=project_id)
+    project_verification_submission.emit(project_id=id)
     return ()
 end
 
@@ -599,11 +601,21 @@ func claim{
         range_check_ptr,
     }(project_owner: felt):
 
-    let (project_id) = reverse_user_project_id(project_owner)
+    let (project_id) = reverse_user_project_id.read(project_owner)
 
      with_attr error_message("Owner has no project"):
             assert_not_zero(project_id)
      end
+
+    # get percentage approved
+    # find current streamed amount
+    # admin approved amount =  total matched * percentage approved
+    # if approved amount > stream amount, we use stream amount as raw_claim_amount
+    # else we use approve amount as raw_claim_amount
+    # get previous claimed amount from storage
+    # claimed_amount = raw_claim_amount - claimed
+    # update claimed to store new raw_claim_amount
+    # send claimed_amount to user
 
     return ()
 end
