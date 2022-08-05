@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.math import assert_le
+from starkware.cairo.common.math import assert_lt, assert_le
 from starkware.starknet.common.syscalls import get_contract_address, get_block_timestamp
 from starkware.cairo.common.uint256 import Uint256, uint256_eq, uint256_sub, uint256_mul, uint256_sqrt, uint256_add
 from openzeppelin.access.ownable.library import Ownable
@@ -324,6 +324,32 @@ func get_project_ipfs_link{
     return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)                          
 end
 
+@external
+func vote2{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(project_id: felt, amount: Uint256, voter_addr: felt):
+
+    alloc_locals
+
+    local syscall_ptr_temp: felt*
+    syscall_ptr_temp = syscall_ptr
+
+    local pedersen_ptr_temp: HashBuiltin*
+    pedersen_ptr_temp = pedersen_ptr
+
+    local range_check_ptr_temp
+    range_check_ptr_temp = range_check_ptr
+
+    local c_old: Uint256
+
+    Ownable.assert_only_owner()
+    assert_only_within_voting_period()
+    assert_project_exist(project_id)
+    return ()
+end
+
 # this function can only be called by the 'owner' (i.e the contract that deploys this contract)
 @external
 func vote{
@@ -432,7 +458,7 @@ func assert_project_exist{
 
      with_attr error_message("Project does not exist"):
             let (current_id) = current_project_id.read()
-            assert_le(project_id, current_id)
+            assert_lt(project_id, current_id)
      end
 
     return ()

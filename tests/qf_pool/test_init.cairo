@@ -68,6 +68,9 @@ func test_init_constructor_correctly{
     let (stream_end) = IQfPool.get_stream_end_time(contract_address=contract_address)
     assert stream_end = STREAM_TIME_END
 
+    let (owner) = IQfPool.get_owner(contract_address=contract_address)
+    assert owner = OWNER_ADDRESS
+
     return ()
 end
 
