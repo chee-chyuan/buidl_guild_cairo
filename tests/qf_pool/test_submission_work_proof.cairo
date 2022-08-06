@@ -123,6 +123,7 @@ func test_submit_work_proof{
     assert project_verification_before.is_approved_latest_submission = 0
 
     # submit work
+    %{ expect_events({"name": "project_verification_submission", "data": [ids.PROJECT_ID]}) %}
     IQfPool.submit_work_proof(contract_address=contract_address, project_owner=PROJECT_OWNER, ipfs_len=ipfs_len, ipfs=ipfs)
 
     let (project_verification_after) = IQfPool.get_project_verification(contract_address=contract_address, project_id=PROJECT_ID)
