@@ -609,6 +609,7 @@ func admin_verify_work{
 
     # check approved_percentage between 0 and 100
     assert_percentage_within_range(val=approved_percentage)
+    assert_project_exist(project_id)
 
     let (previous_project_verification) = project_verification.read(project_id=project_id)
     # check approved percentage greater than previously approved
