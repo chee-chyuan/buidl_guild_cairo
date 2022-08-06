@@ -245,9 +245,30 @@ func get_project_verification_ipfs{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
-}(project_id: felt, index: felt) -> (res: felt):
-    let (res) = project_verification_ipfs.read(project_id=project_id, index=index)
-    return (res=res)
+    }(
+        project_id: felt, 
+        current_index: felt,
+        ipfs_len: felt, 
+        link_len: felt, 
+        link: felt*
+    ) -> (ipfs_res_link_len: felt, ipfs_res_link: felt*):
+
+    if ipfs_len == 0:
+        return (ipfs_res_link_len=link_len, ipfs_res_link=link)
+    end
+
+    let (ipfs_index_link) = project_verification_ipfs.read(project_id=project_id, index=current_index)
+    assert [link + current_index] = ipfs_index_link
+
+    let (len, ipfs_link) = get_project_verification_ipfs(
+                                                    project_id=project_id, 
+                                                    current_index=current_index+1,
+                                                    ipfs_len=ipfs_len-1,
+                                                    link_len=link_len+1,
+                                                    link=link
+                                                )
+                      
+    return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)  
 end
 
 # flow:

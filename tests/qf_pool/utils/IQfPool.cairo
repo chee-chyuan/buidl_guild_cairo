@@ -44,7 +44,13 @@ namespace IQfPool:
     func get_project_verification(project_id: felt) -> (res: ProjectVerification):
     end
 
-    func get_project_verification_ipfs(project_id: felt, index: felt) -> (res: felt):
+    func get_project_verification_ipfs(
+        project_id: felt, 
+        current_index: felt,
+        ipfs_len: felt, 
+        link_len: felt, 
+        link: felt*
+    ) -> (ipfs_res_link_len: felt, ipfs_res_link: felt*):
     end
 
     func init_matched_pool():
@@ -73,5 +79,8 @@ namespace IQfPool:
     end
 
     func vote(project_id: felt, amount: Uint256, voter_addr: felt):
+    end
+
+    func submit_work_proof(project_owner: felt, ipfs_len: felt, ipfs: felt*):
     end
 end

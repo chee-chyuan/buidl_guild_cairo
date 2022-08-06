@@ -342,11 +342,48 @@
                 "type": "felt"
             }
         ],
-        "name": "get_project_verification_ipfs",
+        "name": "get_project_verification_ipfs2",
         "outputs": [
             {
                 "name": "res",
                 "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "current_index",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "link_len",
+                "type": "felt"
+            },
+            {
+                "name": "link",
+                "type": "felt*"
+            }
+        ],
+        "name": "get_project_verification_ipfs",
+        "outputs": [
+            {
+                "name": "ipfs_res_link_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_res_link",
+                "type": "felt*"
             }
         ],
         "stateMutability": "view",
