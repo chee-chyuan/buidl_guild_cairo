@@ -26,6 +26,9 @@ namespace IQfPool:
     func get_total_match() -> (res: Uint256):
     end
 
+    func get_total_divisor() -> (res: Uint256):
+    end
+
     func get_vote_start_time() -> (res: felt):
     end
 

@@ -70,6 +70,10 @@ func test_vote_result_new_voter{
     %}
     contract_address_local = contract_address
 
+    let (total_divisor_before) = IQfPool.get_total_divisor(contract_address=contract_address_local)
+    let (is_total_divisor_before_zero) = uint256_eq(Uint256(0,0), total_divisor_before)
+    assert is_total_divisor_before_zero = 1
+
     let (total_project_contributed_fund_before) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
     let (is_total_project_contributed_fund_before_zero) = uint256_eq(Uint256(0,0), total_project_contributed_fund_before)
     assert is_total_project_contributed_fund_before_zero = 1
@@ -102,6 +106,11 @@ func test_vote_result_new_voter{
 
     let (is_square_sum_c_sqrt_equal) = uint256_eq(Uint256(4,0), project_accumulator.square_sum_c_sqrt)
     assert is_square_sum_c_sqrt_equal = 1
+
+    # check total_divisor
+    let (total_divisor_after) = IQfPool.get_total_divisor(contract_address=contract_address_local)
+    let (is_total_divisor_after) = uint256_eq(Uint256(4,0), total_divisor_after)
+    assert is_total_divisor_after = 1
 
     # check total_project_contributed_fund
     let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
@@ -136,6 +145,11 @@ func test_vote_result_new_voter{
     let (is_square_sum_c_sqrt_equal) = uint256_eq(Uint256(144,0), project_accumulator.square_sum_c_sqrt)
     assert is_square_sum_c_sqrt_equal = 1
 
+    # check total_divisor
+    let (total_divisor_after) = IQfPool.get_total_divisor(contract_address=contract_address_local)
+    let (is_total_divisor_after) = uint256_eq(Uint256(144,0), total_divisor_after)
+    assert is_total_divisor_after = 1
+
     # check total_project_contributed_fund
     let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
     let (is_total_project_contributed_fund_after) = uint256_eq(Uint256(110,0), total_project_contributed_fund_after)
@@ -143,6 +157,10 @@ func test_vote_result_new_voter{
 
     ## user 1 voter for project id = 2
     IQfPool.vote(contract_address=contract_address_local, project_id=2, amount=Uint256(5,0), voter_addr=1)
+
+    let (total_divisor_after) = IQfPool.get_total_divisor(contract_address=contract_address_local)
+    let (is_total_divisor_after) = uint256_eq(Uint256(148,0), total_divisor_after)
+    assert is_total_divisor_after = 1
 
     let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
     let (is_total_project_contributed_fund_after) = uint256_eq(Uint256(115,0), total_project_contributed_fund_after)
@@ -205,6 +223,10 @@ func test_vote_result_repeat_voter{
     let (is_square_sum_c_sqrt_equal) = uint256_eq(Uint256(4,0), project_accumulator.square_sum_c_sqrt)
     assert is_square_sum_c_sqrt_equal = 1
 
+    let (total_divisor_after) = IQfPool.get_total_divisor(contract_address=contract_address_local)
+    let (is_total_divisor_after) = uint256_eq(Uint256(4,0), total_divisor_after)
+    assert is_total_divisor_after = 1
+
     # check total_project_contributed_fund
     let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)
     let (is_total_project_contributed_fund_after) = uint256_eq(Uint256(5,0), total_project_contributed_fund_after)
@@ -232,6 +254,10 @@ func test_vote_result_repeat_voter{
 
     let (is_square_sum_c_sqrt_equal) = uint256_eq(Uint256(49,0), project_accumulator.square_sum_c_sqrt)
     assert is_square_sum_c_sqrt_equal = 1
+
+    let (total_divisor_after) = IQfPool.get_total_divisor(contract_address=contract_address_local)
+    let (is_total_divisor_after) = uint256_eq(Uint256(49,0), total_divisor_after)
+    assert is_total_divisor_after = 1
 
     # check total_project_contributed_fund
     let (total_project_contributed_fund_after) = IQfPool.get_total_project_contributed_fund(contract_address=contract_address_local)

@@ -62,7 +62,11 @@ func project_accumulator(project_id: felt) -> (accumulator: ProjectAccumulator):
 end
 
 @storage_var
-func total_project_contributed_fund()->(total_contributed: Uint256):
+func total_project_contributed_fund() -> (total_contributed: Uint256):
+end
+
+@storage_var
+func total_divisor() -> (total_divisor: Uint256):
 end
 
 @storage_var
@@ -179,6 +183,16 @@ func get_total_match{
         let (res) = total_match.read()
         return (matched=res)
     end
+
+@view
+func get_total_divisor{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }() -> (res: Uint256):
+    let (res) = total_divisor.read()
+    return (res=res)
+end
 
 @view
 func get_vote_start_time{
@@ -421,6 +435,25 @@ func vote{
     # transfer fund to this contract by owner before calling this function
     # thus, amount passed in can be trusted
 
+    # check if project_accumulator.square_sum_c_sqrt exist
+    # if so we deduct this value from the total_divisor and this will be added back later with the updated value
+    let (current_project_accumulator) = project_accumulator.read(project_id=project_id)
+    let (is_square_sum_c_sqrt_0) = uint256_eq(current_project_accumulator.square_sum_c_sqrt, Uint256(0,0))
+    if is_square_sum_c_sqrt_0 == 0:
+        let (old_total_divisor) = total_divisor.read()
+        let (updated_total_divisor) = uint256_sub(old_total_divisor, current_project_accumulator.square_sum_c_sqrt)
+        total_divisor.write(updated_total_divisor)
+
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
+
+
     # get current ProjectVote
     let (current_project_vote) = project_vote.read(project_id=project_id, voter_addr=voter_addr)
 
@@ -490,6 +523,12 @@ func vote{
 
     project_accumulator.write(project_id=project_id, value=ProjectAccumulator(sum_c_new, sum_c_sqrt_new, square_sum_c_sqrt_new))
     
+    # update total_divisor
+    let (old_total_divisor) = total_divisor.read()
+    let (new_total_divisor, add_carry) = uint256_add(old_total_divisor, square_sum_c_sqrt_new)
+    assert add_carry = 0
+    total_divisor.write(new_total_divisor)
+
     # update total_project_contributed_fund
     let (old_total_project_contributed_fund) = total_project_contributed_fund.read()
     let (new_total_project_contributed_fund, add_carry) = uint256_add(old_total_project_contributed_fund, amount)
@@ -656,6 +695,11 @@ func claim{
      end
 
     # get percentage approved
+    let (verification) = project_verification.read(project_id=project_id)
+
+    # total_matched
+    let (accumulator) = project_accumulator.read(project_id=project_id)
+
     # find current streamed amount
     # admin approved amount =  total matched * percentage approved
     # if approved amount > stream amount, we use stream amount as raw_claim_amount

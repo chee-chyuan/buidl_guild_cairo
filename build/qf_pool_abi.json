@@ -251,6 +251,18 @@
     },
     {
         "inputs": [],
+        "name": "get_total_divisor",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "get_vote_start_time",
         "outputs": [
             {
@@ -326,27 +338,6 @@
             {
                 "name": "res",
                 "type": "ProjectVerification"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "name": "project_id",
-                "type": "felt"
-            },
-            {
-                "name": "index",
-                "type": "felt"
-            }
-        ],
-        "name": "get_project_verification_ipfs2",
-        "outputs": [
-            {
-                "name": "res",
-                "type": "felt"
             }
         ],
         "stateMutability": "view",
