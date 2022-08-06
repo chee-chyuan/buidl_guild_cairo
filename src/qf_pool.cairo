@@ -606,12 +606,38 @@ func admin_verify_work{
     }(project_id: felt, approved_percentage: felt):
 
     Ownable.assert_only_owner()
+
     # check approved_percentage between 0 and 100
+    assert_percentage_within_range(val=approved_percentage)
+
+    let (previous_project_verification) = project_verification.read(project_id=project_id)
     # check approved percentage greater than previously approved
+    # we might not need this function atm
+    # with_attr error_message("Approved percentage must be greater than previously approved"):
+    #     let (is_greater_than_previous) = assert_lt(previous_project_verification, approved_percentage)
+    # end
 
     # update if everything is satisfied
+    let new_project_verification = ProjectVerification(previous_project_verification.submission_ipfs_link_len, approved_percentage, 1)
+    project_verification.write(project_id=project_id, value=new_project_verification)
+
     return ()
 end
+
+func assert_percentage_within_range{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(val:felt):
+
+    with_attr error_message("Percentage not within range"):
+        assert_le(0, val)
+
+        assert_le(val, 100)
+    end
+
+    return ()
+end 
 
 # anyone can call this function,
 # the reward will to the project_owner

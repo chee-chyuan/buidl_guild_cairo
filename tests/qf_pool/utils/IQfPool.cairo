@@ -83,4 +83,7 @@ namespace IQfPool:
 
     func submit_work_proof(project_owner: felt, ipfs_len: felt, ipfs: felt*):
     end
+
+    func admin_verify_work(project_id: felt, approved_percentage: felt):
+    end
 end
