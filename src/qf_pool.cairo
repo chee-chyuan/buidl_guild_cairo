@@ -431,10 +431,6 @@ func vote{
 
     local c_prev: Uint256
 
-    %{
-        print(f"[AMOUNT is {ids.amount.low}]")
-    %}
-
     Ownable.assert_only_owner()
     assert_only_within_voting_period()
     assert_project_exist(project_id)
@@ -445,13 +441,6 @@ func vote{
         let (current_total_divisor) = total_divisor.read()
         let (total_divisor_removed) = uint256_sub(current_total_divisor, current_project_accumulator.square_sum_c_sqrt)
         total_divisor.write(total_divisor_removed)
-
-        %{
-            print(f"[QFPOOL]: is_sum_c_sqrt_is_0 == 0")
-            print(f"current_total_divisor: {ids.current_total_divisor.low}")
-            print(f"current_project_accumulator.sum_c_sqrt: {ids.current_project_accumulator.square_sum_c_sqrt.low}")
-            print(f"total_divisor_removed: {ids.total_divisor_removed.low}")
-        %}
 
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
@@ -524,16 +513,6 @@ func vote{
     let (new_total_divisor, add_carry) = uint256_add(current_total_divisor, new_square_sum_c_sqrt)
     assert add_carry = 0
     total_divisor.write(new_total_divisor)
-    
-    %{
-        print(f"[QFPOOL] Final total divisor")
-        print(f"current_total_divisor: {ids.current_total_divisor.low}")
-        print(f"new_c: {ids.new_c.low}")
-        print(f"new_c_sqrt: {ids.new_c_sqrt.low}")
-        print(f"new_sum_c_sqrt: {ids.new_sum_c_sqrt.low}")
-        print(f"new_square_sum_c_sqrt: {ids.new_square_sum_c_sqrt.low}")
-        print(f"new_total_divisor: {ids.new_total_divisor.low}")
-    %}
 
     # total project contributed fund
     let (current_total_project_contributed_fund) = total_project_contributed_fund.read()
@@ -866,23 +845,23 @@ func get_time_as_percentage2{
     let denominator = Uint256(inter_denom, 0)
 
     # let (temp, mul_carry) = uint256_mul(numerator, MULTIPLIER_1_E_20)
-    %{
-        print(f"inter_denom: {ids.inter_denom}")
-        print(f"denominator: {ids.denominator}")
-        # print(f"numerator.low: {ids.numerator}")
-        # print(f"numerator.high: {ids.numerator.high}")
+    # %{
+    #     print(f"inter_denom: {ids.inter_denom}")
+    #     print(f"denominator: {ids.denominator}")
+    #     # print(f"numerator.low: {ids.numerator}")
+    #     # print(f"numerator.high: {ids.numerator.high}")
 
-        # print(f"denominator.low: {ids.denominator.low}")
-        # print(f"denominator.high: {ids.denominator.high}")
+    #     # print(f"denominator.low: {ids.denominator.low}")
+    #     # print(f"denominator.high: {ids.denominator.high}")
 
-        # print(f"numerator: {ids.numerator}")
+    #     # print(f"numerator: {ids.numerator}")
 
-        # print(f"temp.low: {ids.temp.low}")
-        # print(f"temp.high: {ids.temp.high}")
+    #     # print(f"temp.low: {ids.temp.low}")
+    #     # print(f"temp.high: {ids.temp.high}")
 
-        # print(f"mul_carry.low: {ids.mul_carry.low}")
-        # print(f"mul_carry.high: {ids.mul_carry.high}")
-    %}
+    #     # print(f"mul_carry.low: {ids.mul_carry.low}")
+    #     # print(f"mul_carry.high: {ids.mul_carry.high}")
+    # %}
     # assert mul_carry = Uint256(0,0)
 
     # # % = numerator * 1e20 / divisor

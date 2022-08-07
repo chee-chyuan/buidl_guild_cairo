@@ -20,6 +20,10 @@ main = [
     "src/main.cairo",
 ]
 
+core = [
+    "src/core.cairo",
+]
+
 qf_pool = [
     "src/qf_pool.cairo",
 ]

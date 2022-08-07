@@ -491,25 +491,6 @@
                 "type": "felt"
             }
         ],
-        "name": "vote2",
-        "outputs": [],
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "name": "project_id",
-                "type": "felt"
-            },
-            {
-                "name": "amount",
-                "type": "Uint256"
-            },
-            {
-                "name": "voter_addr",
-                "type": "felt"
-            }
-        ],
         "name": "vote",
         "outputs": [],
         "type": "function"
@@ -567,6 +548,39 @@
             }
         ],
         "name": "get_matched_for_project",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_time_as_percentage",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "start_time",
+                "type": "felt"
+            },
+            {
+                "name": "end_time",
+                "type": "felt"
+            }
+        ],
+        "name": "get_time_as_percentage2",
         "outputs": [
             {
                 "name": "res",
