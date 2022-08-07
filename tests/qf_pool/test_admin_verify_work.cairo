@@ -116,7 +116,7 @@ end
 
 # check approve
 @view
-func teset_can_admin_verify_work{
+func test_can_admin_verify_work{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,

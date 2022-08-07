@@ -3,7 +3,9 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math import assert_lt, assert_le, assert_not_zero
 from starkware.starknet.common.syscalls import get_contract_address, get_block_timestamp
-from starkware.cairo.common.uint256 import Uint256, uint256_eq, uint256_sub, uint256_mul, uint256_sqrt, uint256_add
+from starkware.cairo.common.uint256 import (Uint256, uint256_eq, uint256_sub, uint256_mul, 
+                                            uint256_sqrt, uint256_add,uint256_unsigned_div_rem,
+                                            uint256_le,uint256_lt)
 from openzeppelin.access.ownable.library import Ownable
 from openzeppelin.token.erc20.IERC20 import IERC20
 from structs.project_struct import ProjectInfo, ProjectVote, ProjectAccumulator, ProjectVerification
@@ -417,7 +419,8 @@ func get_project_ipfs_link{
     return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)                          
 end
 
-# this function can only be called by the 'owner' (i.e the contract that deploys this contract)
+
+
 @external
 func vote{
         syscall_ptr : felt*,
@@ -426,23 +429,29 @@ func vote{
     }(project_id: felt, amount: Uint256, voter_addr: felt):
     alloc_locals
 
-    local c_old: Uint256
+    local c_prev: Uint256
+
+    %{
+        print(f"[AMOUNT is {ids.amount.low}]")
+    %}
 
     Ownable.assert_only_owner()
     assert_only_within_voting_period()
     assert_project_exist(project_id)
-    
-    # transfer fund to this contract by owner before calling this function
-    # thus, amount passed in can be trusted
 
-    # check if project_accumulator.square_sum_c_sqrt exist
-    # if so we deduct this value from the total_divisor and this will be added back later with the updated value
     let (current_project_accumulator) = project_accumulator.read(project_id=project_id)
-    let (is_square_sum_c_sqrt_0) = uint256_eq(current_project_accumulator.square_sum_c_sqrt, Uint256(0,0))
-    if is_square_sum_c_sqrt_0 == 0:
-        let (old_total_divisor) = total_divisor.read()
-        let (updated_total_divisor) = uint256_sub(old_total_divisor, current_project_accumulator.square_sum_c_sqrt)
-        total_divisor.write(updated_total_divisor)
+    let (is_sum_c_sqrt_is_0) = uint256_eq(current_project_accumulator.square_sum_c_sqrt, Uint256(0,0))
+    if is_sum_c_sqrt_is_0 == 0:
+        let (current_total_divisor) = total_divisor.read()
+        let (total_divisor_removed) = uint256_sub(current_total_divisor, current_project_accumulator.square_sum_c_sqrt)
+        total_divisor.write(total_divisor_removed)
+
+        %{
+            print(f"[QFPOOL]: is_sum_c_sqrt_is_0 == 0")
+            print(f"current_total_divisor: {ids.current_total_divisor.low}")
+            print(f"current_project_accumulator.sum_c_sqrt: {ids.current_project_accumulator.square_sum_c_sqrt.low}")
+            print(f"total_divisor_removed: {ids.total_divisor_removed.low}")
+        %}
 
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
@@ -456,46 +465,32 @@ func vote{
 
     # get current ProjectVote
     let (current_project_vote) = project_vote.read(project_id=project_id, voter_addr=voter_addr)
-
-    # check if vote exist by checking ProjectInfo
-    # if so 
-    # save c value as c_old
-    # minus c from sum_c
-    # minus c from total_project_contributed_fund (i dont think we need as we will add in c_old also later)(ignore for now)
-    # minus c_sqrt from sum_c_sqrt
-    # recalculate square_sum_c_sqrt by squaring sum_c_sqrt
-    # update project acummulator
     let (is_c_zero) = uint256_eq(current_project_vote.c, Uint256(0,0))
-
     if is_c_zero == 0:
-        c_old.low = current_project_vote.c.low
-        c_old.high = current_project_vote.c.high
+        c_prev.low = current_project_vote.c.low
+        c_prev.high = current_project_vote.c.high
 
         let (current_project_accumulator) = project_accumulator.read(project_id=project_id)
-        let (sum_c_updated) = uint256_sub(current_project_accumulator.sum_c, c_old)
+        let (sum_c_sqrt_removed) = uint256_sub(current_project_accumulator.sum_c_sqrt, current_project_vote.c_sqrt)
+        let (square_sum_c_sqrt_removed, mul_carry) = uint256_mul(sum_c_sqrt_removed, sum_c_sqrt_removed)
+        assert mul_carry = Uint256(0,0)
 
-        # let (c_sqrt_to_minus) = uint256_sqrt(c_old)
-        let c_sqrt_to_minus = current_project_vote.c_sqrt
-        let (sum_c_sqrt_updated) = uint256_sub(current_project_accumulator.sum_c_sqrt, c_sqrt_to_minus)
-
-        let (square_sum_c_sqrt_updated, carry) = uint256_mul(sum_c_sqrt_updated, sum_c_sqrt_updated)
-        assert carry = Uint256(0, 0) # we dont support too large numbers
-
-        # update our project accumulator
         project_accumulator.write(
-                                    project_id=project_id, 
-                                    value=ProjectAccumulator(sum_c=sum_c_updated, 
-                                                             sum_c_sqrt=sum_c_sqrt_updated,
-                                                             square_sum_c_sqrt=square_sum_c_sqrt_updated
-                                                            )
-                                 )
+                    project_id=project_id, 
+                    value=ProjectAccumulator(
+                                current_project_accumulator.sum_c,
+                                sum_c_sqrt_removed,
+                                square_sum_c_sqrt_removed
+                                )
+                    )
 
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
     else:
-        c_old.low = 0
-        c_old.high = 0
+        c_prev.low = 0
+        c_prev.high = 0
+
         tempvar syscall_ptr = syscall_ptr
         tempvar pedersen_ptr = pedersen_ptr
         tempvar range_check_ptr = range_check_ptr
@@ -503,35 +498,46 @@ func vote{
 
     let (current_project_accumulator) = project_accumulator.read(project_id=project_id)
 
-    # update c and c_sqrt. if previous has value, c_new = c_old + c_added (amount)
-    let (c_new, add_carry) = uint256_add(c_old, amount)
-    assert add_carry = 0
-    let (c_sqrt_new) = uint256_sqrt(c_new)
-
-    project_vote.write(project_id=project_id, voter_addr=voter_addr, value=ProjectVote(c=c_new, c_sqrt=c_sqrt_new))
-
-    # add c to sum_c, add c to total_project_contributed_fund, add c_sqrt to sum_c_sqrt, 
-    let (sum_c_new, add_carry) = uint256_add(c_new, current_project_accumulator.sum_c)
+    # project vote
+    let (new_c, add_carry) = uint256_add(amount, c_prev)
     assert add_carry = 0
 
-    let (sum_c_sqrt_new, add_carry) = uint256_add(current_project_accumulator.sum_c_sqrt, c_sqrt_new)
+    let (new_c_sqrt) = uint256_sqrt(new_c)
+
+    let new_project_vote = ProjectVote(c=new_c, c_sqrt=new_c_sqrt)
+    project_vote.write(project_id=project_id, voter_addr=voter_addr, value=new_project_vote)
+
+    # project accumulator
+    let (new_sum_c, add_carry) = uint256_add(current_project_accumulator.sum_c, amount)
     assert add_carry = 0
 
-    # recalculate square_sum_c_sqrt
-    let (square_sum_c_sqrt_new, carry) = uint256_mul(sum_c_sqrt_new, sum_c_sqrt_new)
-    assert carry = Uint256(0, 0) # we dont support too large numbers
+    let (new_sum_c_sqrt, add_carry) = uint256_add(current_project_accumulator.sum_c_sqrt, new_c_sqrt)
+    assert add_carry = 0
 
-    project_accumulator.write(project_id=project_id, value=ProjectAccumulator(sum_c_new, sum_c_sqrt_new, square_sum_c_sqrt_new))
-    
-    # update total_divisor
-    let (old_total_divisor) = total_divisor.read()
-    let (new_total_divisor, add_carry) = uint256_add(old_total_divisor, square_sum_c_sqrt_new)
+    let (new_square_sum_c_sqrt, mul_carry) = uint256_mul(new_sum_c_sqrt, new_sum_c_sqrt)
+    assert mul_carry = Uint256(0,0)
+
+    project_accumulator.write(project_id=project_id, value=ProjectAccumulator(new_sum_c, new_sum_c_sqrt, new_square_sum_c_sqrt))
+
+    # total divisor
+    let (current_total_divisor) = total_divisor.read()
+    let (new_total_divisor, add_carry) = uint256_add(current_total_divisor, new_square_sum_c_sqrt)
     assert add_carry = 0
     total_divisor.write(new_total_divisor)
+    
+    %{
+        print(f"[QFPOOL] Final total divisor")
+        print(f"current_total_divisor: {ids.current_total_divisor.low}")
+        print(f"new_c: {ids.new_c.low}")
+        print(f"new_c_sqrt: {ids.new_c_sqrt.low}")
+        print(f"new_sum_c_sqrt: {ids.new_sum_c_sqrt.low}")
+        print(f"new_square_sum_c_sqrt: {ids.new_square_sum_c_sqrt.low}")
+        print(f"new_total_divisor: {ids.new_total_divisor.low}")
+    %}
 
-    # update total_project_contributed_fund
-    let (old_total_project_contributed_fund) = total_project_contributed_fund.read()
-    let (new_total_project_contributed_fund, add_carry) = uint256_add(old_total_project_contributed_fund, amount)
+    # total project contributed fund
+    let (current_total_project_contributed_fund) = total_project_contributed_fund.read()
+    let (new_total_project_contributed_fund, add_carry) = uint256_add(current_total_project_contributed_fund, amount)
     assert add_carry = 0
     total_project_contributed_fund.write(new_total_project_contributed_fund)
 
@@ -687,6 +693,7 @@ func claim{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
     }(project_owner: felt):
+    alloc_locals
 
     let (project_id) = reverse_user_project_id.read(project_owner)
 
@@ -698,16 +705,190 @@ func claim{
     let (verification) = project_verification.read(project_id=project_id)
 
     # total_matched
-    let (accumulator) = project_accumulator.read(project_id=project_id)
+    let (matched) = get_matched_for_project(project_id=project_id)
 
     # find current streamed amount
+    let (start_time) = stream_start_time.read()
+    let (end_time) = stream_end_time.read()
+    let (streamed_percentage) = get_time_as_percentage2(start_time=start_time, end_time=end_time)
+    let (streamed_amount_temp, mul_carry) =  uint256_mul(matched, streamed_percentage)
+    assert mul_carry = Uint256(0,0)
+
+    let MULTIPLIER_1_E_20 = Uint256(0x56bc75e2d63100000, 0)
+    let (streamed_amount, _) = uint256_unsigned_div_rem(streamed_amount_temp, MULTIPLIER_1_E_20)
+
     # admin approved amount =  total matched * percentage approved
+    let admin_approved_percentage_uint256 = Uint256(verification.admin_latest_approved_percentage, 0)
+    let (temp, mul_carry) = uint256_mul(matched, admin_approved_percentage_uint256)
+    assert mul_carry = Uint256(0,0)
+    let (admin_approved_amount, _) = uint256_unsigned_div_rem(temp, Uint256(2,0))
+
+    local raw_claim_amount: Uint256
+    let (is_approved_gt_stream) = uint256_le(streamed_amount, admin_approved_amount)
     # if approved amount > stream amount, we use stream amount as raw_claim_amount
-    # else we use approve amount as raw_claim_amount
+    if is_approved_gt_stream == 1:
+        raw_claim_amount.low = streamed_amount.low
+        raw_claim_amount.high = streamed_amount.high
+    else:
+        # else we use approve amount as raw_claim_amount
+        raw_claim_amount.low = admin_approved_amount.low
+        raw_claim_amount.high = admin_approved_amount.high
+    end
+
     # get previous claimed amount from storage
+    let (previous_claimed) = claimed.read(project_id=project_id)
+
     # claimed_amount = raw_claim_amount - claimed
+    let (to_claim) = uint256_sub(raw_claim_amount, previous_claimed)
+
     # update claimed to store new raw_claim_amount
+    claimed.write(project_id=project_id, value=to_claim)
+
     # send claimed_amount to user
+    let (erc20) = erc20_addr.read()
+    IERC20.transfer(contract_address=erc20, recipient=project_owner, amount=to_claim)
 
     return ()
+end
+
+@view
+func get_matched_for_project{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(project_id: felt) -> (res: Uint256):
+
+    alloc_locals
+    local syscall_ptr_temp: felt* = syscall_ptr
+
+    let (accumulator) = project_accumulator.read(project_id=project_id)
+    let (match) = total_match.read()
+    let (divisor) = total_divisor.read()
+
+    # assert_not_zero(total_divisor)
+
+    let (res_temp, mul_carry) = uint256_mul(accumulator.square_sum_c_sqrt, match)
+    assert mul_carry = Uint256(0, 0)
+
+    let (res, _) = uint256_unsigned_div_rem(res_temp, divisor)
+
+    return (res=res)
+end
+
+@view
+func get_time_as_percentage{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }() -> (res: Uint256):
+    alloc_locals
+    local syscall_ptr_temp: felt*
+    syscall_ptr_temp = syscall_ptr
+
+    let MULTIPLIER_1_E_20 = Uint256(0x56bc75e2d63100000, 0)
+
+    let (current_time) = get_block_timestamp()
+    let current_time_uint256 = Uint256(current_time,0)
+
+    let (end_time) = stream_end_time.read()
+    let end_time_uint256 = Uint256(end_time,0)
+    let (is_current_time_greater_than_end) = uint256_lt(end_time_uint256, current_time_uint256)
+    # if current time > stream end time, 100%
+    if is_current_time_greater_than_end == 1:
+        let percentage = Uint256(100,0)
+        let (res, mul_carry) = uint256_mul(percentage, MULTIPLIER_1_E_20)
+        assert mul_carry = Uint256(0,0)
+        return (res=res)
+    end
+
+    let (start_time) = stream_start_time.read()
+    let start_time_uint256 = Uint256(start_time,0)
+    let (is_start_time_less_than_current) = uint256_lt(start_time_uint256, current_time_uint256)
+    # if stream start time < current  time, 0%
+    if is_start_time_less_than_current == 1:
+        return (res=Uint256(0,0))
+    end
+
+    # numerator = get_block_timestamp() - stream_start_time
+    let (numerator) = uint256_sub(current_time_uint256, start_time_uint256)
+    # denominator = stream_end_time - stream_start_time
+    let (denominator) = uint256_sub(end_time_uint256, start_time_uint256)
+
+    let (temp, mul_carry) = uint256_mul(numerator, MULTIPLIER_1_E_20)
+    assert mul_carry = Uint256(0,0)
+
+    # % = numerator * 1e20 / divisor
+    # if result is 1e20, it is 1%
+    let (res, _) = uint256_unsigned_div_rem(temp, denominator)
+    return (res=res)
+end
+
+@view
+func get_time_as_percentage2{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(start_time: felt, end_time: felt) -> (res: Uint256):
+    alloc_locals
+    local syscall_ptr_temp: felt*
+    syscall_ptr_temp = syscall_ptr
+
+    let MULTIPLIER_1_E_20 = Uint256(0x56bc75e2d63100000, 0)
+
+    let (current_time) = get_block_timestamp()
+    let current_time_uint256 = Uint256(current_time,0)
+
+    let end_time_uint256 = Uint256(end_time,0)
+    let (is_current_time_greater_than_end) = uint256_lt(end_time_uint256, current_time_uint256)
+    # if current time > stream end time, 100%
+    if is_current_time_greater_than_end == 1:
+        let percentage = Uint256(100,0)
+        let (res, mul_carry) = uint256_mul(percentage, MULTIPLIER_1_E_20)
+        assert mul_carry = Uint256(0,0)
+        return (res=res)
+    end
+
+    let start_time_uint256 = Uint256(start_time,0)
+    let (is_start_time_less_than_current) = uint256_lt(start_time_uint256, current_time_uint256)
+    # if stream start time < current  time, 0%
+    if is_start_time_less_than_current == 1:
+        return (res=Uint256(0,0))
+    end
+
+    # numerator = get_block_timestamp() - stream_start_time
+    # let (numerator) = uint256_sub(current_time_uint256, start_time_uint256)
+    let inter_numer = current_time - start_time
+    let numerator = Uint256(inter_numer, 0)
+    # denominator = stream_end_time - stream_start_time
+    # let (denominator) = uint256_sub(end_time_uint256, start_time_uint256)
+
+    let inter_denom = end_time - start_time
+    let denominator = Uint256(inter_denom, 0)
+
+    # let (temp, mul_carry) = uint256_mul(numerator, MULTIPLIER_1_E_20)
+    %{
+        print(f"inter_denom: {ids.inter_denom}")
+        print(f"denominator: {ids.denominator}")
+        # print(f"numerator.low: {ids.numerator}")
+        # print(f"numerator.high: {ids.numerator.high}")
+
+        # print(f"denominator.low: {ids.denominator.low}")
+        # print(f"denominator.high: {ids.denominator.high}")
+
+        # print(f"numerator: {ids.numerator}")
+
+        # print(f"temp.low: {ids.temp.low}")
+        # print(f"temp.high: {ids.temp.high}")
+
+        # print(f"mul_carry.low: {ids.mul_carry.low}")
+        # print(f"mul_carry.high: {ids.mul_carry.high}")
+    %}
+    # assert mul_carry = Uint256(0,0)
+
+    # # % = numerator * 1e20 / divisor
+    # # if result is 1e20, it is 1%
+    # let (res, _) = uint256_unsigned_div_rem(temp, denominator)
+    # return (res=res)
+
+    return (res=Uint256(0,0))
 end

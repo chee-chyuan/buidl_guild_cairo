@@ -89,4 +89,10 @@ namespace IQfPool:
 
     func admin_verify_work(project_id: felt, approved_percentage: felt):
     end
+
+    func get_matched_for_project(project_id: felt) -> (res: Uint256):
+    end
+
+    func get_time_as_percentage2(start_time: felt, end_time: felt) -> (res: Uint256):
+    end
 end

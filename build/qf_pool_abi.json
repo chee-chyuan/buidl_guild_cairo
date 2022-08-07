@@ -491,6 +491,25 @@
                 "type": "felt"
             }
         ],
+        "name": "vote2",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            },
+            {
+                "name": "voter_addr",
+                "type": "felt"
+            }
+        ],
         "name": "vote",
         "outputs": [],
         "type": "function"
@@ -538,6 +557,23 @@
         ],
         "name": "claim",
         "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_matched_for_project",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     }
 ]
