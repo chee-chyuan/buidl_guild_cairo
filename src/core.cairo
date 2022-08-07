@@ -161,6 +161,59 @@ func deploy_pool{
     return ()
 end
 
+@view
+func get_user_current_buidl_id{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user_addr: felt) -> (id: felt):
+    let (res) = user_current_buidl_id.read(user_addr)
+
+    return (id=res)
+end
+
+@view
+func get_user_buidl{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user_addr: felt, buidl_id: felt) -> (res: BuidlInfo):
+    let (res) = user_buidl.read(user_addr, buidl_id)
+    return (res=res)
+end
+
+@view
+func get_user_buidl_ipfs{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(
+        user_addr: felt, 
+        buidl_id: felt,
+        current_index: felt,
+        ipfs_len: felt, 
+        link_len: felt, 
+        link: felt*
+    ) -> (ipfs_res_link_len: felt, ipfs_res_link: felt*):
+    if ipfs_len == 0:
+        return (ipfs_res_link_len=link_len, ipfs_res_link=link)
+    end
+
+    let (ipfs_index_link) = user_buidl_ipfs.read(user_addr=user_addr, buidl_id=buidl_id, index=current_index)
+    assert [link + current_index] = ipfs_index_link
+
+    let (len, ipfs_link) = get_user_buidl_ipfs(
+                                                    user_addr=user_addr, 
+                                                    buidl_id=buidl_id,
+                                                    current_index=current_index+1,
+                                                    ipfs_len=ipfs_len-1,
+                                                    link_len=link_len+1,
+                                                    link=link
+                                                )
+                      
+    return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)     
+end
+
 @external 
 func add_buidl{
     syscall_ptr : felt*,

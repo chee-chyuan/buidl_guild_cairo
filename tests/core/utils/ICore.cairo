@@ -1,5 +1,7 @@
 %lang starknet
 
+from src.structs.buidl_struct import BuidlInfo
+
 @contract_interface
 namespace ICore:
     func get_pool_contract_hash() -> (res: felt):
@@ -18,6 +20,22 @@ namespace ICore:
     end
 
     func get_pool_address(pool_id: felt) -> (res: felt):
+    end
+
+    func get_user_current_buidl_id(user_addr: felt) -> (id: felt):
+    end
+
+    func get_user_buidl(user_addr: felt, buidl_id: felt) -> (res: BuidlInfo):
+    end
+
+    func get_user_buidl_ipfs(
+        user_addr: felt, 
+        buidl_id: felt,
+        current_index: felt,
+        ipfs_len: felt, 
+        link_len: felt, 
+        link: felt*
+    ) -> (ipfs_res_link_len: felt, ipfs_res_link: felt*):
     end
 
     func deploy_pool(
