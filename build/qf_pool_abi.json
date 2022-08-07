@@ -402,7 +402,12 @@
             }
         ],
         "name": "add_project",
-        "outputs": [],
+        "outputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
         "type": "function"
     },
     {

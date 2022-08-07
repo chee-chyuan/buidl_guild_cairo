@@ -1,5 +1,39 @@
 [
     {
+        "members": [
+            {
+                "name": "ipfs_link_len",
+                "offset": 0,
+                "type": "felt"
+            }
+        ],
+        "name": "BuidlInfo",
+        "size": 1,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "pool_id",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "pool_addr",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "project_id",
+                "offset": 2,
+                "type": "felt"
+            }
+        ],
+        "name": "BuidlProjectMapping",
+        "size": 3,
+        "type": "struct"
+    },
+    {
         "data": [
             {
                 "name": "previousOwner",
@@ -28,6 +62,18 @@
         "name": "constructor",
         "outputs": [],
         "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "get_admin",
+        "outputs": [
+            {
+                "name": "admin",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     },
     {
         "inputs": [],
@@ -132,6 +178,123 @@
     {
         "inputs": [
             {
+                "name": "user_addr",
+                "type": "felt"
+            }
+        ],
+        "name": "get_user_current_buidl_id",
+        "outputs": [
+            {
+                "name": "id",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_addr",
+                "type": "felt"
+            },
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_user_buidl",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "BuidlInfo"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_addr",
+                "type": "felt"
+            },
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            },
+            {
+                "name": "current_index",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "link_len",
+                "type": "felt"
+            },
+            {
+                "name": "link",
+                "type": "felt*"
+            }
+        ],
+        "name": "get_user_buidl_ipfs",
+        "outputs": [
+            {
+                "name": "ipfs_res_link_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_res_link",
+                "type": "felt*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_addr",
+                "type": "felt"
+            }
+        ],
+        "name": "get_user_buidl_project_len",
+        "outputs": [
+            {
+                "name": "len",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_addr",
+                "type": "felt"
+            },
+            {
+                "name": "index",
+                "type": "felt"
+            }
+        ],
+        "name": "get_user_buidl_project_mapping",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "BuidlProjectMapping"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "name": "ipfs_len",
                 "type": "felt"
             },
@@ -141,6 +304,21 @@
             }
         ],
         "name": "add_buidl",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            },
+            {
+                "name": "pool_id",
+                "type": "felt"
+            }
+        ],
+        "name": "add_buidl_to_pool",
         "outputs": [],
         "type": "function"
     }

@@ -320,8 +320,8 @@ func add_project{
       owner: felt, 
       ipfs_link_len: felt, 
       ipfs_link: felt*
-    ):
-
+    ) -> (project_id: felt) :
+    alloc_locals
     # allows project to be added at any time
     # we wont be checking for duplicates ipfs_link
 
@@ -333,12 +333,13 @@ func add_project{
 
     let info = ProjectInfo(ipfs_link_len=ipfs_link_len, owner=owner)
     let (current_id) = current_project_id.read()
+    local current_id = current_id
     current_project_id.write(current_id + 1)
 
     project_info.write(project_id=current_id, value=info)
     reverse_user_project_id.write(owner, current_id)
     store_ipfs_link(project_id=current_id, current_index=0, ipfs_link_len=ipfs_link_len, ipfs_link=ipfs_link)
-    return()
+    return(project_id=current_id)
 end
 
 func store_ipfs_link{

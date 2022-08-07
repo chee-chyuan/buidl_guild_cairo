@@ -1,9 +1,12 @@
 %lang starknet
 
-from src.structs.buidl_struct import BuidlInfo
+from src.structs.buidl_struct import BuidlInfo, BuidlProjectMapping
 
 @contract_interface
 namespace ICore:
+    func get_admin() -> (admin: felt):
+    end
+
     func get_pool_contract_hash() -> (res: felt):
     end
 
@@ -38,6 +41,12 @@ namespace ICore:
     ) -> (ipfs_res_link_len: felt, ipfs_res_link: felt*):
     end
 
+    func get_user_buidl_project_len(user_addr: felt) -> (len: felt):
+    end
+
+    func get_user_buidl_project_mapping(user_addr: felt, index: felt) -> (res: BuidlProjectMapping):
+    end
+
     func deploy_pool(
         vote_start_time_ : felt,
         vote_end_time_: felt,
@@ -50,5 +59,8 @@ namespace ICore:
         ipfs_len: felt,
         ipfs: felt*,
     ):
+    end
+
+    func add_buidl_to_pool(buidl_id: felt, pool_id: felt):
     end
 end

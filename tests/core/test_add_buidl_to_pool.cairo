@@ -6,18 +6,24 @@ from tests.core.utils.ICore import ICore
 from src.interfaces.IUserRegistrar import IUserRegistrar
 
 const USER = 13434
-const CONTRACT_HASH = 353534
 @view
 func __setup__():
+    tempvar qf_pool_class_hash
     tempvar user_registry_address
     %{
-         context.user_registry = deploy_contract(
+        context.qf_class_hash = declare(
+            "./src/qf_pool.cairo", 
+        ).class_hash
+
+        ids.qf_pool_class_hash = context.qf_class_hash
+
+        context.user_registry = deploy_contract(
             "./src/user_registry.cairo", 
             []).contract_address
 
-         ids.user_registry_address = context.user_registry
+        ids.user_registry_address = context.user_registry
 
-         context.contract_address = deploy_contract(
+        context.contract_address = deploy_contract(
             "./src/core.cairo", 
             [ids.CONTRACT_HASH,
              ids.user_registry_address
@@ -56,51 +62,23 @@ func register_user{
     return ()
 end
 
-@view
-func test_fail_to_add_user_not_registered{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}():
-    tempvar contract_address
-    %{
-        ids.contract_address = context.contract_address
-    %}
-
-    let ipfs_len = 1
-    let (ipfs) = alloc()
-    assert ipfs[0] = 'a'
-
-    %{ expect_revert(error_message="User not registered") %}
-    ICore.add_buidl(contract_address=contract_address, ipfs_len=1, ipfs=ipfs)
-
-    return ()
-end
-
-@view
-func test_add_buidl{
+@view 
+func test_add_buidl_to_pool{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
 }():
     alloc_locals
-    local pedersen_ptr_temp :HashBuiltin* = pedersen_ptr
+    local pedersen_ptr_local: HashBuiltin* = pedersen_ptr 
 
     register_user(USER)
 
     tempvar contract_address
-    tempvar user_registry
     %{
-        ids.user_registry = context.user_registry
-        ids.contract_address = context.contract_address
+        ids.contract_address=context.contract_address
         stop_prank_callable = start_prank(ids.USER, target_contract_address=ids.contract_address)
     %}
-
     local contract_address = contract_address
-
-    # state before
-    let (id_before) = ICore.get_user_current_buidl_id(contract_address=contract_address, user_addr=USER)
-    assert id_before = 0
 
     let ipfs_len = 2
     let (ipfs) = alloc()
@@ -109,26 +87,12 @@ func test_add_buidl{
 
     ICore.add_buidl(contract_address=contract_address, ipfs_len=ipfs_len, ipfs=ipfs)
 
-    let (id_after) = ICore.get_user_current_buidl_id(contract_address=contract_address, user_addr=USER)
-    assert id_after = 1
+    ICore.add_buidl_to_pool(contract_address=contract_address, buidl_id=1, pool_id=1)
 
-    let (link) = alloc()
-    let (ipfs_len, ipfs) = ICore.get_user_buidl_ipfs(
-                            contract_address=contract_address,
-                            user_addr=USER,
-                            buidl_id=1,
-                            current_index=0,
-                            ipfs_len=2,
-                            link_len=0,
-                            link=link
-                            )
-    
-    assert ipfs_len = 2
-    assert ipfs[0] = 'a'
-    assert ipfs[1] = 'b'
 
     %{
         stop_prank_callable()
     %}
     return ()
 end
+

@@ -1,11 +1,13 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.math import assert_le, assert_not_zero
 from starkware.cairo.common.alloc import alloc
 from starkware.starknet.common.syscalls import get_caller_address, get_contract_address, deploy
 from openzeppelin.access.ownable.library import Ownable
-from structs.buidl_struct import BuidlInfo
+from structs.buidl_struct import BuidlInfo, BuidlProjectMapping
 from interfaces.IUserRegistrar import IUserRegistrar
+from interfaces.IQfPool import IQfPool
 
 @storage_var
 func pool_contract_hash() -> (res: felt):
@@ -43,6 +45,14 @@ end
 func user_buidl_ipfs(user_addr: felt, buidl_id: felt, index: felt) -> (str: felt):
 end
 
+@storage_var
+func user_buidl_project_len(user_addr: felt) -> (len: felt):
+end
+
+@storage_var
+func user_buidl_project_mapping(user_addr: felt, index: felt) -> (res: BuidlProjectMapping):
+end
+
 @constructor
 func constructor{
     syscall_ptr : felt*,
@@ -57,6 +67,16 @@ func constructor{
     current_pool_id.write(1)
 
     return ()
+end
+
+@view
+func get_admin{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}() -> (admin: felt):
+    let (res) = Ownable.owner()
+    return (admin=res)
 end
 
 @view
@@ -130,7 +150,7 @@ func deploy_pool{
     stream_start_time_ : felt,
     stream_end_time_: felt,
 ):
-
+    Ownable.assert_only_owner()
     let (token_addr) = token_address.read()
     let (core_contract_addr) = get_contract_address()
 
@@ -214,6 +234,27 @@ func get_user_buidl_ipfs{
     return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)     
 end
 
+@view
+func get_user_buidl_project_len{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user_addr: felt) -> (len: felt):
+    let (res) = user_buidl_project_len.read(user_addr)
+    return (len=res)
+end
+
+@view
+func get_user_buidl_project_mapping{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user_addr: felt, index: felt) -> (res: BuidlProjectMapping):
+
+    let (res) = user_buidl_project_mapping.read(user_addr, index)
+    return(res=res)
+end
+
 @external 
 func add_buidl{
     syscall_ptr : felt*,
@@ -282,6 +323,53 @@ func store_ipfs{
                     ipfs_link_len=ipfs_link_len-1, 
                     ipfs_link=&ipfs_link[1]
                 )
+
+    return ()
+end
+
+
+# TODO: write positive unit test
+@external 
+func add_buidl_to_pool{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(buidl_id: felt, pool_id: felt):
+    alloc_locals
+    let (caller) = get_caller_address()
+
+    # check if buidl_id < user_current_buidl_id
+    assert_not_zero(buidl_id)
+    let (current_buidl_id) = user_current_buidl_id.read(caller)
+    assert_le(buidl_id, current_buidl_id)
+
+    # check pool id exist
+    let (pool_addr) = pool_address.read(pool_id=pool_id)
+    local pool_addr = pool_addr
+    assert_not_zero(pool_addr)
+
+    let (buidl_info) = user_buidl.read(user_addr=caller, buidl_id=buidl_id)
+
+    let (ipfs) = alloc()
+
+    let (ipfs_len, ipfs_res) = get_user_buidl_ipfs(
+                                        caller, 
+                                        buidl_id, 
+                                        0, 
+                                        buidl_info.ipfs_link_len, 
+                                        0, 
+                                        ipfs)
+
+
+    let (project_id) = IQfPool.add_project(
+                            contract_address=pool_addr,
+                            owner=caller,
+                            ipfs_link_len=buidl_info.ipfs_link_len,
+                            ipfs_link=ipfs_res
+                            )
+
+    # store in build_project_mapping
+    let mapping = BuidlProjectMapping(pool_id, pool_addr, project_id)
 
     return ()
 end
