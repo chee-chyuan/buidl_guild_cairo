@@ -2,9 +2,11 @@
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math import assert_le, assert_not_zero
+from starkware.cairo.common.uint256 import Uint256
 from starkware.cairo.common.alloc import alloc
 from starkware.starknet.common.syscalls import get_caller_address, get_contract_address, deploy
 from openzeppelin.access.ownable.library import Ownable
+from openzeppelin.token.erc20.IERC20 import IERC20
 from structs.buidl_struct import BuidlInfo, BuidlProjectMapping
 from interfaces.IUserRegistrar import IUserRegistrar
 from interfaces.IQfPool import IQfPool
@@ -283,22 +285,6 @@ func add_buidl{
     return ()
 end
 
-func assert_user_is_registered{
-    syscall_ptr : felt*,
-    pedersen_ptr : HashBuiltin*,
-    range_check_ptr,
-}(user: felt):
-    let (user_registrar_addr) = user_registrar.read()
-
-    let (is_registered) = IUserRegistrar.check_user_registered(contract_address=user_registrar_addr,
-                                                               sender_address=user)
-    with_attr error_message("User not registered"):
-        assert is_registered = 1
-    end
-
-    return ()
-end
-
 func store_ipfs{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
@@ -327,8 +313,6 @@ func store_ipfs{
     return ()
 end
 
-
-# TODO: write positive unit test
 @external 
 func add_buidl_to_pool{
     syscall_ptr : felt*,
@@ -375,5 +359,51 @@ func add_buidl_to_pool{
     user_buidl_project_len.write(caller, current_len+1)
 
     user_buidl_project_mapping.write(caller, current_len, mapping)
+    return ()
+end
+
+@external 
+func vote{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(pool_id: felt, project_id: felt, amount: Uint256):
+    alloc_locals
+    # check if user is registered to prevent QF from being gamed
+    let (caller) = get_caller_address()
+    assert_user_is_registered(caller)
+
+    # check pool id exist
+    let (pool_addr) = pool_address.read(pool_id=pool_id)
+    local pool_addr = pool_addr
+    assert_not_zero(pool_addr)
+
+    # transfer erc20 to pool
+    let (erc20_addr) = token_address.read()
+    let (transfer_res) = IERC20.transferFrom(contract_address=erc20_addr,
+                        sender=caller,
+                        recipient=pool_addr,
+                        amount=amount)
+    assert transfer_res = 1
+
+    # vote
+    IQfPool.vote(contract_address=pool_addr, project_id=project_id, amount=amount, voter_addr=caller)
+
+    return ()
+end
+
+func assert_user_is_registered{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user: felt):
+    let (user_registrar_addr) = user_registrar.read()
+
+    let (is_registered) = IUserRegistrar.check_user_registered(contract_address=user_registrar_addr,
+                                                               sender_address=user)
+    with_attr error_message("User not registered"):
+        assert is_registered = 1
+    end
+
     return ()
 end

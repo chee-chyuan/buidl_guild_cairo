@@ -420,8 +420,9 @@ func get_project_ipfs_link{
     return (ipfs_res_link_len=len, ipfs_res_link=ipfs_link)                          
 end
 
-
-
+# callable only by core_contract
+# core_contract will transfer erc20 donated to pool
+# and call this function
 @external
 func vote{
         syscall_ptr : felt*,
