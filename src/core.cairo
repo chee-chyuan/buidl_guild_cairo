@@ -60,9 +60,8 @@ func constructor{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
-}(contract_hash: felt, user_registrar_: felt, erc20_addr_: felt):
+}(contract_hash: felt, user_registrar_: felt, erc20_addr_: felt, admin: felt):
 
-    let (admin) = get_caller_address()
     Ownable.initializer(admin)
     pool_contract_hash.write(contract_hash)
     user_registrar.write(user_registrar_)

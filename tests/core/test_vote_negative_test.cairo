@@ -42,6 +42,7 @@ func __setup__():
             [ids.qf_pool_class_hash,
              ids.user_registry_address,
              ids.erc20_address,
+             ids.ADMIN
             ]).contract_address
     %}
     return ()

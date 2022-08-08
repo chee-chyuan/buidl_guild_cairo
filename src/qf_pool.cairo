@@ -688,7 +688,7 @@ func claim{
     # total_matched
     let (matched) = get_matched_for_project(project_id=project_id)
     let (accumulator) = get_project_accumulator(project_id=project_id)
-    let (total_fund, add_carry) = uint256_add(matched, accumulator)
+    let (total_fund, add_carry) = uint256_add(matched, accumulator.sum_c)
     assert add_carry = 0
 
     # find current streamed amount

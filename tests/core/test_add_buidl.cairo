@@ -5,6 +5,7 @@ from starkware.cairo.common.alloc import alloc
 from tests.core.utils.ICore import ICore
 from src.interfaces.IUserRegistrar import IUserRegistrar
 
+const ADMIN = 343252342
 const USER = 13434
 const CONTRACT_HASH = 353534
 @view
@@ -21,7 +22,8 @@ func __setup__():
             "./src/core.cairo", 
             [ids.CONTRACT_HASH,
              ids.user_registry_address,
-             1
+             1,
+             ids.ADMIN
             ]).contract_address
     %}
     return ()

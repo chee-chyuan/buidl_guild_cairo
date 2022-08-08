@@ -6,6 +6,7 @@ from tests.core.utils.ICore import ICore
 from tests.qf_pool.utils.IQfPool import IQfPool
 from src.interfaces.IUserRegistrar import IUserRegistrar
 
+const ADMIN = 4245
 const USER = 13434
 @view
 func __setup__():
@@ -28,7 +29,8 @@ func __setup__():
             "./src/core.cairo", 
             [ids.qf_pool_class_hash,
              ids.user_registry_address,
-             1
+             1,
+             ids.ADMIN
             ]).contract_address
     %}
     return ()

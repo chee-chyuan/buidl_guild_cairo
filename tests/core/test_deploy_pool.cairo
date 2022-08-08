@@ -27,7 +27,8 @@ func __setup__():
             "./src/core.cairo", 
             [ids.qf_pool_class_hash,
              ids.user_registry_address,
-             1
+             1,
+             ids.ADMIN
             ]).contract_address
     %}
     return ()
