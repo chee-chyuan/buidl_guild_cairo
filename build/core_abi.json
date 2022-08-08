@@ -34,6 +34,23 @@
         "type": "struct"
     },
     {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
         "data": [
             {
                 "name": "previousOwner",
@@ -56,6 +73,10 @@
             },
             {
                 "name": "user_registrar_",
+                "type": "felt"
+            },
+            {
+                "name": "erc20_addr_",
                 "type": "felt"
             }
         ],
@@ -310,6 +331,21 @@
     {
         "inputs": [
             {
+                "name": "pool_id",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            }
+        ],
+        "name": "admin_init_matched_fund_in_pool",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "name": "buidl_id",
                 "type": "felt"
             },
@@ -319,6 +355,25 @@
             }
         ],
         "name": "add_buidl_to_pool",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "pool_id",
+                "type": "felt"
+            },
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            }
+        ],
+        "name": "vote",
         "outputs": [],
         "type": "function"
     }

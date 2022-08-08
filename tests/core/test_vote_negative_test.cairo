@@ -146,7 +146,7 @@ func test_cannot_vote_if_pool_id_invalid{
     return ()
 end
 
-@view
+# @view
 func test_cannot_vote_if_transfer_erc20_fails{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,

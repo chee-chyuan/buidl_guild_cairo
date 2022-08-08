@@ -295,6 +295,7 @@ func init_matched_pool{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
 }():
+    Ownable.assert_only_owner()
 
     with_attr error_message("Has been initialized"):
         let (is_init) = initalized_matched_value.read()

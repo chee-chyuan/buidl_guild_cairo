@@ -112,7 +112,13 @@ func test_init_matched_pool{
     %{ stop_prank_callable() %}
 
     # init the matched fund
+    %{
+        stop_prank_callable = start_prank(ids.OWNER_ADDRESS, target_contract_address=ids.contract_address_local)
+    %}
     IQfPool.init_matched_pool(contract_address=contract_address_local)
+    %{
+        stop_prank_callable()
+    %}
     let (matched_after) = IQfPool.get_total_match(contract_address=contract_address_local)
 
     # %{
@@ -137,11 +143,19 @@ func test_can_only_init_once{
         ids.contract_address = context.contract_address
     %}
 
+
+    %{
+        stop_prank_callable = start_prank(ids.OWNER_ADDRESS, target_contract_address=ids.contract_address)
+    %}
+    
     IQfPool.init_matched_pool(contract_address=contract_address)
 
     # fail if we try to init again
     %{ expect_revert(error_message="Has been initialized") %}
     IQfPool.init_matched_pool(contract_address=contract_address)
 
+    %{
+        stop_prank_callable()
+    %}
     return ()
 end

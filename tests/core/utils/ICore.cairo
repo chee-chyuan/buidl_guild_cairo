@@ -67,4 +67,7 @@ namespace ICore:
 
     func vote(pool_id: felt, project_id: felt, amount: Uint256):
     end
+
+    func admin_init_matched_fund_in_pool(pool_id: felt, amount: Uint256):
+    end
 end
