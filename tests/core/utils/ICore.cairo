@@ -1,6 +1,7 @@
 %lang starknet
 
 from src.structs.buidl_struct import BuidlInfo, BuidlProjectMapping
+from starkware.cairo.common.uint256 import Uint256
 
 @contract_interface
 namespace ICore:
@@ -62,5 +63,8 @@ namespace ICore:
     end
 
     func add_buidl_to_pool(buidl_id: felt, pool_id: felt):
+    end
+
+    func vote(pool_id: felt, project_id: felt, amount: Uint256):
     end
 end

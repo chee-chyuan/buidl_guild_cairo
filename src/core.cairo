@@ -60,13 +60,14 @@ func constructor{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
-}(contract_hash: felt, user_registrar_: felt):
+}(contract_hash: felt, user_registrar_: felt, erc20_addr_: felt):
 
     let (admin) = get_caller_address()
     Ownable.initializer(admin)
     pool_contract_hash.write(contract_hash)
     user_registrar.write(user_registrar_)
     current_pool_id.write(1)
+    token_address.write(erc20_addr_)
 
     return ()
 end
@@ -376,7 +377,9 @@ func vote{
     # check pool id exist
     let (pool_addr) = pool_address.read(pool_id=pool_id)
     local pool_addr = pool_addr
-    assert_not_zero(pool_addr)
+    with_attr error_message("Invalid Pool Id"):
+        assert_not_zero(pool_addr)
+    end
 
     # transfer erc20 to pool
     let (erc20_addr) = token_address.read()
@@ -384,7 +387,10 @@ func vote{
                         sender=caller,
                         recipient=pool_addr,
                         amount=amount)
-    assert transfer_res = 1
+
+    with_attr error_message("Transfer Erc20 fail"):
+        assert transfer_res = 1
+    end
 
     # vote
     IQfPool.vote(contract_address=pool_addr, project_id=project_id, amount=amount, voter_addr=caller)

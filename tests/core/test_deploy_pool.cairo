@@ -26,7 +26,8 @@ func __setup__():
         context.contract_address = deploy_contract(
             "./src/core.cairo", 
             [ids.qf_pool_class_hash,
-             ids.user_registry_address
+             ids.user_registry_address,
+             1
             ]).contract_address
     %}
     return ()

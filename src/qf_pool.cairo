@@ -430,7 +430,6 @@ func vote{
         range_check_ptr,
     }(project_id: felt, amount: Uint256, voter_addr: felt):
     alloc_locals
-
     local c_prev: Uint256
 
     Ownable.assert_only_owner()
