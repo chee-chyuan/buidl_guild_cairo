@@ -687,12 +687,15 @@ func claim{
 
     # total_matched
     let (matched) = get_matched_for_project(project_id=project_id)
+    let (accumulator) = get_project_accumulator(project_id=project_id)
+    let (total_fund, add_carry) = uint256_add(matched, accumulator)
+    assert add_carry = 0
 
     # find current streamed amount
     let (start_time) = stream_start_time.read()
     let (end_time) = stream_end_time.read()
-    let (streamed_percentage) = get_time_as_percentage2(start_time=start_time, end_time=end_time)
-    let (streamed_amount_temp, mul_carry) =  uint256_mul(matched, streamed_percentage)
+    let (streamed_percentage) = get_time_as_percentage(start_time=start_time, end_time=end_time)
+    let (streamed_amount_temp, mul_carry) =  uint256_mul(total_fund, streamed_percentage)
     assert mul_carry = Uint256(0,0)
 
     let MULTIPLIER_1_E_20 = Uint256(0x56bc75e2d63100000, 0)
@@ -700,7 +703,7 @@ func claim{
 
     # admin approved amount =  total matched * percentage approved
     let admin_approved_percentage_uint256 = Uint256(verification.admin_latest_approved_percentage, 0)
-    let (temp, mul_carry) = uint256_mul(matched, admin_approved_percentage_uint256)
+    let (temp, mul_carry) = uint256_mul(total_fund, admin_approved_percentage_uint256)
     assert mul_carry = Uint256(0,0)
     let (admin_approved_amount, _) = uint256_unsigned_div_rem(temp, Uint256(2,0))
 
@@ -757,7 +760,7 @@ func get_matched_for_project{
 end
 
 @view
-func get_time_as_percentage{
+func get_time_as_percentage2{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
@@ -805,7 +808,7 @@ func get_time_as_percentage{
 end
 
 @view
-func get_time_as_percentage2{
+func get_time_as_percentage{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
@@ -830,46 +833,21 @@ func get_time_as_percentage2{
     end
 
     let start_time_uint256 = Uint256(start_time,0)
-    let (is_start_time_less_than_current) = uint256_lt(start_time_uint256, current_time_uint256)
+    let (is_start_time_less_than_current) = uint256_lt(current_time_uint256, start_time_uint256)
     # if stream start time < current  time, 0%
     if is_start_time_less_than_current == 1:
         return (res=Uint256(0,0))
     end
 
-    # numerator = get_block_timestamp() - stream_start_time
-    # let (numerator) = uint256_sub(current_time_uint256, start_time_uint256)
-    let inter_numer = current_time - start_time
-    let numerator = Uint256(inter_numer, 0)
-    # denominator = stream_end_time - stream_start_time
-    # let (denominator) = uint256_sub(end_time_uint256, start_time_uint256)
+    let diff = current_time - start_time
+    let numerator = Uint256(diff, 0)
 
-    let inter_denom = end_time - start_time
-    let denominator = Uint256(inter_denom, 0)
+    let diff = end_time - start_time
+    let denominator = Uint256(diff, 0)
 
-    # let (temp, mul_carry) = uint256_mul(numerator, MULTIPLIER_1_E_20)
-    # %{
-    #     print(f"inter_denom: {ids.inter_denom}")
-    #     print(f"denominator: {ids.denominator}")
-    #     # print(f"numerator.low: {ids.numerator}")
-    #     # print(f"numerator.high: {ids.numerator.high}")
+    let (temp, mul_carry) = uint256_mul(numerator, MULTIPLIER_1_E_20)
+    assert mul_carry = Uint256(0,0)
 
-    #     # print(f"denominator.low: {ids.denominator.low}")
-    #     # print(f"denominator.high: {ids.denominator.high}")
-
-    #     # print(f"numerator: {ids.numerator}")
-
-    #     # print(f"temp.low: {ids.temp.low}")
-    #     # print(f"temp.high: {ids.temp.high}")
-
-    #     # print(f"mul_carry.low: {ids.mul_carry.low}")
-    #     # print(f"mul_carry.high: {ids.mul_carry.high}")
-    # %}
-    # assert mul_carry = Uint256(0,0)
-
-    # # % = numerator * 1e20 / divisor
-    # # if result is 1e20, it is 1%
-    # let (res, _) = uint256_unsigned_div_rem(temp, denominator)
-    # return (res=res)
-
-    return (res=Uint256(0,0))
+    let (res, _) = uint256_unsigned_div_rem(temp, denominator)
+    return (res=res)
 end

@@ -34,23 +34,23 @@ func test_get_time_as_percentage{
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
 }():
+    let start_time = 1650000000
+    let end_time = 1660000000
     tempvar contract_address
     %{
         ids.contract_address = context.contract_address
-        # stop_warp = warp(ids.VOTE_TIME_START + 1, target_contract_address=ids.contract_address) 
+        stop_warp = warp(ids.start_time + 1000000, target_contract_address=ids.contract_address) 
     %}
-    let start_time = 1650000000
-    let end_time = 1660000000
-    let (percentage) = IQfPool.get_time_as_percentage2(contract_address=contract_address, start_time=start_time, end_time=end_time)
+    let (percentage) = IQfPool.get_time_as_percentage(
+                                                        contract_address=contract_address, 
+                                                        start_time=start_time, 
+                                                        end_time=end_time
+                                                        )
 
-    let (current_blocktime) = get_block_timestamp()
-    # %{
-    #     print(f"start_time: {ids.start_time}")
-    #     print(f"end_time: {ids.end_time}")
-    #     print(f"current_blocktime: {ids.current_blocktime}")
-    #     print(f"percentage: {ids.percentage.low}")
+    %{
+        print(f"percentage: {ids.percentage.low}")
 
-    #     # stop_warp()
-    # %}
+        stop_warp()
+    %}
     return ()
 end
