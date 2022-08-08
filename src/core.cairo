@@ -371,5 +371,9 @@ func add_buidl_to_pool{
     # store in build_project_mapping
     let mapping = BuidlProjectMapping(pool_id, pool_addr, project_id)
 
+    let (current_len) = user_buidl_project_len.read(caller)
+    user_buidl_project_len.write(caller, current_len+1)
+
+    user_buidl_project_mapping.write(caller, current_len, mapping)
     return ()
 end
