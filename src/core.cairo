@@ -297,6 +297,66 @@ func get_user_buidl_project_mapping{
     return(res=res)
 end
 
+@view 
+func get_all_user_buidl_project_mapping{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user_addr: felt) -> (res_len: felt, res: BuidlProjectMapping*):
+    let (length) = user_buidl_project_len.read(user_addr)
+    let (mapping: BuidlProjectMapping*) = alloc()
+    let (res_len, res) = get_all_user_buidl_project_mapping_internal(user_addr, 0, length, 0, mapping)
+    return (res_len, res)
+end
+
+func get_all_user_buidl_project_mapping_internal{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(
+    user_addr: felt,
+    current_index: felt, 
+    total_length: felt, 
+    mapping_len: felt, 
+    mapping: BuidlProjectMapping*) -> (res_len: felt, res: BuidlProjectMapping*):
+
+    if total_length == 0: 
+        return (res_len=mapping_len, res=mapping)
+    end
+
+    let (current_mapping) = user_buidl_project_mapping.read(user_addr, current_index)
+    assert mapping[current_index] = current_mapping
+
+    let (res_len, res) = get_all_user_buidl_project_mapping_internal(user_addr, current_index+1, total_length-1, mapping_len+1, mapping)
+
+    return (res_len, res)
+end
+
+
+# func get_all_user_buidl_internal{
+#     syscall_ptr : felt*,
+#     pedersen_ptr : HashBuiltin*,
+#     range_check_ptr,
+# }(
+#     user_addr: felt,
+#     current_index: felt, 
+#     total_length: felt, 
+#     info_len: felt, 
+#     info: BuidlInfo*) -> (res_len: felt, res: BuidlInfo*):
+
+#     if total_length == 0: 
+#         return (res_len=info_len, res=info)
+#     end
+
+#     let (current_info) = user_buidl.read(user_addr, current_index+1)
+#     assert info[current_index] = current_info
+
+#     let (res_len, res) = get_all_user_buidl_internal(user_addr, current_index+1, total_length-1, info_len+1, info)
+
+#     return (res_len, res)
+# end
+
+
 @external 
 func add_buidl{
     syscall_ptr : felt*,

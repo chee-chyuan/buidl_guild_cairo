@@ -351,6 +351,27 @@
     {
         "inputs": [
             {
+                "name": "user_addr",
+                "type": "felt"
+            }
+        ],
+        "name": "get_all_user_buidl_project_mapping",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "BuidlProjectMapping*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "name": "ipfs_len",
                 "type": "felt"
             },
