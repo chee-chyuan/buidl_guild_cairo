@@ -205,6 +205,42 @@ func get_user_buidl{
 end
 
 @view
+func get_all_user_buidl{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(user_addr: felt, length: felt) -> (res_len: felt, res: BuidlInfo*):
+    let (info: BuidlInfo*) = alloc()
+    let (res_len, res) = get_all_user_buidl_internal(user_addr, 0, length, 0, info)
+
+    return (res_len, res)
+end
+
+
+func get_all_user_buidl_internal{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(
+    user_addr: felt,
+    current_index: felt, 
+    total_length: felt, 
+    info_len: felt, 
+    info: BuidlInfo*) -> (res_len: felt, res: BuidlInfo*):
+
+    if total_length == 0: 
+        return (res_len=info_len, res=info)
+    end
+
+    let (current_info) = user_buidl.read(user_addr, current_index+1)
+    assert info[current_index] = current_info
+
+    let (res_len, res) = get_all_user_buidl_internal(user_addr, current_index+1, total_length-1, info_len+1, info)
+
+    return (res_len, res)
+end
+
+@view
 func get_user_buidl_ipfs{
         syscall_ptr : felt*,
         pedersen_ptr : HashBuiltin*,

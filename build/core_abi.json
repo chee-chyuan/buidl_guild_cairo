@@ -245,6 +245,31 @@
                 "type": "felt"
             },
             {
+                "name": "length",
+                "type": "felt"
+            }
+        ],
+        "name": "get_all_user_buidl",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "BuidlInfo*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_addr",
+                "type": "felt"
+            },
+            {
                 "name": "buidl_id",
                 "type": "felt"
             },

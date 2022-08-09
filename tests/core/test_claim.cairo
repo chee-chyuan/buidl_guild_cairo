@@ -5,6 +5,7 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.uint256 import Uint256
 from tests.core.utils.ICore import ICore
 from openzeppelin.token.erc20.IERC20 import IERC20
+from src.interfaces.IUserRegistrar import IUserRegistrar
 
 const ADMIN = 45321342
 const USER = 13434
@@ -168,3 +169,57 @@ func add_buidl_and_project{
     return ()
 end
 
+
+func init_matched_pool{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(pool_id: felt):
+    
+    tempvar contract_address
+    %{
+        ids.contract_address = context.contract_address
+    %}
+
+    let (admin) = ICore.get_admin(contract_address=contract_address)
+
+    %{
+        stop_prank_callable = start_prank(ids.admin, target_contract_address=ids.contract_address)
+    %}
+
+    ICore.admin_init_matched_fund_in_pool(
+                            contract_address=contract_address, 
+                            pool_id=pool_id, 
+                            amount=Uint256(100,0)
+                        )
+
+    %{
+        stop_prank_callable()
+    %}
+
+    return ()
+end
+
+@view 
+func test_claim{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}():
+    alloc_locals
+    let (pool_addr) = create_new_pool()
+    local pool_addr = pool_addr
+    register_user(user=USER)
+    add_buidl_and_project()
+    transfer_funds_to_user_and_approve()
+    # init_matched_pool(1)
+    tempvar contract_address
+    %{
+        ids.contract_address=context.contract_address
+    %}
+
+    %{
+    %}
+
+    return ()
+end
