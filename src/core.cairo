@@ -403,7 +403,7 @@ func add_buidl_to_pool{
     local pool_addr = pool_addr
     assert_not_zero(pool_addr)
 
-    let (buidl_info) = user_buidl.read(user_addr=caller, buidl_id=buidl_id, user_addr=caller)
+    let (buidl_info) = user_buidl.read(user_addr=caller, buidl_id=buidl_id)
 
     let (ipfs) = alloc()
 
@@ -424,7 +424,7 @@ func add_buidl_to_pool{
                             )
 
     # store in build_project_mapping
-    let mapping = BuidlProjectMapping(pool_id, pool_addr, project_id, buidl_id)
+    let mapping = BuidlProjectMapping(pool_id, pool_addr, project_id, buidl_id, caller)
 
     let (current_len) = user_buidl_project_len.read(caller)
     user_buidl_project_len.write(caller, current_len+1)

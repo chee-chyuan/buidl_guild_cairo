@@ -32,10 +32,15 @@
                 "name": "buidl_id",
                 "offset": 3,
                 "type": "felt"
+            },
+            {
+                "name": "user_addr",
+                "offset": 4,
+                "type": "felt"
             }
         ],
         "name": "BuidlProjectMapping",
-        "size": 4,
+        "size": 5,
         "type": "struct"
     },
     {
