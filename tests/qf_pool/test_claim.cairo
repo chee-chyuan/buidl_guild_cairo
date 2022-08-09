@@ -7,10 +7,10 @@ from tests.qf_pool.utils.IQfPool import IQfPool
 from openzeppelin.token.erc20.IERC20 import IERC20
 
 const OWNER_ADDRESS = 123456
-const VOTE_TIME_START = 1
-const VOTE_TIME_END = 2
-const STREAM_TIME_START = 3
-const STREAM_TIME_END = 4
+const VOTE_TIME_START = 1650000000
+const VOTE_TIME_END = 1660000000
+const STREAM_TIME_START = 1650000000
+const STREAM_TIME_END = 1660000000
 
 const PROJECT_OWNER = 353232
 const PROJECT_OWNER2 = 43234
@@ -74,7 +74,7 @@ func test_claim{
     %{
         ids.contract_address = context.contract_address
         ids.erc20_address = context.erc20_address
-        stop_warp = warp(ids.VOTE_TIME_START + 1, target_contract_address=ids.contract_address) 
+        stop_warp = warp(ids.VOTE_TIME_START + 1000000, target_contract_address=ids.contract_address) 
         stop_prank_callable = start_prank(ids.OWNER_ADDRESS, target_contract_address=ids.contract_address)
         stop_prank_callable_erc20 = start_prank(ids.OWNER_ADDRESS, target_contract_address=ids.erc20_address)
     %}
@@ -84,5 +84,32 @@ func test_claim{
     IERC20.transfer(contract_address=erc20_address, recipient=contract_address, amount=Uint256(1000,0))
     IQfPool.init_matched_pool(contract_address=contract_address)
 
+    add_project(owner=PROJECT_OWNER)
+
+    const PROJECT_ID = 1
+    const VOTER_ADDRESS = 543214123
+    IERC20.transfer(contract_address=erc20_address, recipient=contract_address, amount=Uint256(100,0))
+    IQfPool.vote(contract_address=contract_address, project_id=PROJECT_ID, amount=Uint256(100,0), voter_addr=VOTER_ADDRESS)
+
+    # user balance before
+    let (balance_before) = IERC20.balanceOf(contract_address=erc20_address, account=PROJECT_OWNER)
+    assert balance_before = Uint256(0,0)
+
+    # admin approve full amount for testing
+    IQfPool.admin_verify_work(contract_address=contract_address, project_id=PROJECT_ID, approved_percentage=100)
+
+    IQfPool.claim(contract_address=contract_address, project_owner=PROJECT_OWNER)
+
+    # user balance after
+    let (balance_after) = IERC20.balanceOf(contract_address=erc20_address, account=PROJECT_OWNER)
+    %{
+        print(f"balance_after: {ids.balance_after.low}")
+    %}
+
+    %{
+        stop_warp()
+        stop_prank_callable()
+        stop_prank_callable_erc20()
+    %}
     return ()
 end

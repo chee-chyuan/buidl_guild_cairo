@@ -695,11 +695,24 @@ func claim{
     let (start_time) = stream_start_time.read()
     let (end_time) = stream_end_time.read()
     let (streamed_percentage) = get_time_as_percentage(start_time=start_time, end_time=end_time)
+    %{
+        print(f"streamed_percentage: {ids.streamed_percentage.low}")
+        print(f"total_fund: {ids.total_fund.low}")
+    %}
+
     let (streamed_amount_temp, mul_carry) =  uint256_mul(total_fund, streamed_percentage)
     assert mul_carry = Uint256(0,0)
 
+    %{
+        print(f"streamed_amount_temp: {ids.streamed_amount_temp.low}")
+    %}
+
     let MULTIPLIER_1_E_20 = Uint256(0x56bc75e2d63100000, 0)
     let (streamed_amount, _) = uint256_unsigned_div_rem(streamed_amount_temp, MULTIPLIER_1_E_20)
+
+    %{
+        print(f"streamed_amount: {ids.streamed_amount.low}")
+    %}
 
     # admin approved amount =  total matched * percentage approved
     let admin_approved_percentage_uint256 = Uint256(verification.admin_latest_approved_percentage, 0)
@@ -718,6 +731,10 @@ func claim{
         raw_claim_amount.low = admin_approved_amount.low
         raw_claim_amount.high = admin_approved_amount.high
     end
+
+    %{
+        print(f"raw_claim_amount: {ids.raw_claim_amount.low}")
+    %}
 
     # get previous claimed amount from storage
     let (previous_claimed) = claimed.read(project_id=project_id)

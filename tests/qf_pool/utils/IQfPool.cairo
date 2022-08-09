@@ -95,4 +95,7 @@ namespace IQfPool:
 
     func get_time_as_percentage(start_time: felt, end_time: felt) -> (res: Uint256):
     end
+
+    func claim(project_owner: felt):
+    end
 end

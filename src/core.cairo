@@ -428,6 +428,62 @@ func vote{
     return ()
 end
 
+@external
+func submit_work_proof{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(pool_id: felt, ipfs_len: felt, ipfs: felt*):
+    alloc_locals
+    # check if user is registered to prevent QF from being gamed
+    let (caller) = get_caller_address()
+    assert_user_is_registered(caller)
+
+     # check pool id exist
+    let (pool_addr) = pool_address.read(pool_id=pool_id)
+    local pool_addr = pool_addr
+    with_attr error_message("Invalid Pool Id"):
+        assert_not_zero(pool_addr)
+    end
+
+    IQfPool.submit_work_proof(contract_address=pool_addr, project_owner=caller, ipfs_len=ipfs_len, ipfs=ipfs)
+    return ()
+end
+
+@external
+func admin_verify_work{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(pool_id: felt, project_id: felt, approved_percentage: felt):
+    Ownable.assert_only_owner()
+
+     # check pool id exist
+    let (pool_addr) = pool_address.read(pool_id=pool_id)
+    local pool_addr = pool_addr
+    with_attr error_message("Invalid Pool Id"):
+        assert_not_zero(pool_addr)
+    end
+
+    IQfPool.admin_verify_work(contract_address=pool_addr, project_id=project_id, approved_percentage=approved_percentage)
+
+    return ()
+end
+
+@external
+func claim{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(pool_id: felt, owner: felt):
+    # check pool id exist
+    let (pool_addr) = pool_address.read(pool_id=pool_id)
+    local pool_addr = pool_addr
+    assert_not_zero(pool_addr)
+
+    IQfPool.claim(contract_address=pool_addr, project_owner=owner)
+end
+
 func assert_user_is_registered{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,

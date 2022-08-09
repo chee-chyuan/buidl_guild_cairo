@@ -70,4 +70,7 @@ namespace ICore:
 
     func admin_init_matched_fund_in_pool(pool_id: felt, amount: Uint256):
     end
+
+    func claim(pool_id: felt, owner: felt):
+    end
 end
