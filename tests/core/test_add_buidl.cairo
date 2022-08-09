@@ -130,6 +130,10 @@ func test_add_buidl{
     assert ipfs[0] = 'a'
     assert ipfs[1] = 'b'
 
+    let (buidl_len, buidl) = ICore.get_all_user_buidl(contract_address=contract_address, user_addr=USER)
+    assert buidl_len = 1
+    assert buidl.ipfs_link_len = 2
+
     %{
         stop_prank_callable()
     %}
