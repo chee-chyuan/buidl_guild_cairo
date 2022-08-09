@@ -32,6 +32,9 @@ namespace ICore:
     func get_user_buidl(user_addr: felt, buidl_id: felt) -> (res: BuidlInfo):
     end
 
+    func get_all_user_buidl(user_addr: felt, length: felt) -> (res_len: felt, res: BuidlInfo*):
+    end
+
     func get_user_buidl_ipfs(
         user_addr: felt, 
         buidl_id: felt,

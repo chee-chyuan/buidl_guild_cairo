@@ -209,13 +209,13 @@ func get_all_user_buidl{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
-}(user_addr: felt, length: felt) -> (res_len: felt, res: BuidlInfo*):
+}(user_addr: felt) -> (res_len: felt, res: BuidlInfo*):
     let (info: BuidlInfo*) = alloc()
+    let (length) = user_current_buidl_id.read(user_addr)
     let (res_len, res) = get_all_user_buidl_internal(user_addr, 0, length, 0, info)
 
     return (res_len, res)
 end
-
 
 func get_all_user_buidl_internal{
     syscall_ptr : felt*,
