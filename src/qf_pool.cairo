@@ -6,9 +6,10 @@ from starkware.starknet.common.syscalls import get_contract_address, get_block_t
 from starkware.cairo.common.uint256 import (Uint256, uint256_eq, uint256_sub, uint256_mul, 
                                             uint256_sqrt, uint256_add,uint256_unsigned_div_rem,
                                             uint256_le,uint256_lt)
+from starkware.cairo.common.alloc import alloc
 from openzeppelin.access.ownable.library import Ownable
 from openzeppelin.token.erc20.IERC20 import IERC20
-from structs.project_struct import ProjectInfo, ProjectVote, ProjectAccumulator, ProjectVerification
+from structs.project_struct import ProjectInfo, ProjectVote, ProjectAccumulator, ProjectVerification, ProjectReturn
 
 @storage_var
 func erc20_addr() -> (addr: felt):
@@ -122,6 +123,77 @@ func get_current_project_id{
     }() -> (id:felt):
     let (res) = current_project_id.read()
     return (id=res)
+end
+
+@view 
+func get_project_by_id{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(project_id: felt) -> (res: ProjectReturn):
+
+    let (info) = project_info.read(project_id)
+    let (accumulator) = project_accumulator.read(project_id)
+    let (verification) = project_verification.read(project_id)
+
+    let res = ProjectReturn(
+                info.ipfs_link_len,
+                info.owner,
+                accumulator.sum_c, 
+                accumulator.sum_c_sqrt,
+                accumulator.square_sum_c_sqrt,
+                verification.submission_ipfs_link_len,
+                verification.admin_latest_approved_percentage,
+                verification.is_approved_latest_submission
+                )
+    return (res=res)
+end
+
+@view 
+func get_all_projects{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }() -> (res_len: felt, res: ProjectReturn*):
+
+    let (current_id) = current_project_id.read() # need to -1 to get the length
+    let (project_return: ProjectReturn*) = alloc()
+    let (res_len, res) = get_all_projects_internal(0, current_id-1, 0, project_return)
+    return (res_len, res)
+end
+
+
+func get_all_projects_internal{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(
+    current_index: felt, 
+    total_length: felt, 
+    res_len: felt, 
+    res: ProjectReturn*
+    ) -> (res_len: felt, res: ProjectReturn*):
+
+    if total_length == 0: 
+        return (res_len=res_len, res=res)
+    end
+
+    let (info) = project_info.read(current_index+1)
+    let (accumulator) = project_accumulator.read(current_index+1)
+    let (verification) = project_verification.read(current_index+1)
+
+    assert res[current_index].ipfs_link_len = info.ipfs_link_len
+    assert res[current_index].owner = info.owner
+    assert res[current_index].sum_c = accumulator.sum_c
+    assert res[current_index].sum_c_sqrt = accumulator.sum_c_sqrt
+    assert res[current_index].square_sum_c_sqrt = accumulator.square_sum_c_sqrt
+    assert res[current_index].submission_ipfs_link_len = verification.submission_ipfs_link_len
+    assert res[current_index].admin_latest_approved_percentage = verification.admin_latest_approved_percentage
+    assert res[current_index].is_approved_latest_submission = verification.is_approved_latest_submission
+
+    let (res_len, res) = get_all_projects_internal(current_index+1, total_length-1, res_len+1, res)
+
+    return (res_len, res)
 end
 
 @view

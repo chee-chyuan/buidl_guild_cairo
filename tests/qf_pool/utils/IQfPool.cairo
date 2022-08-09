@@ -1,11 +1,17 @@
 %lang starknet
 from starkware.cairo.common.uint256 import Uint256
-from src.structs.project_struct import ProjectInfo, ProjectAccumulator, ProjectVote, ProjectVerification
+from src.structs.project_struct import ProjectInfo, ProjectAccumulator, ProjectVote, ProjectVerification, ProjectReturn
 
 @contract_interface
 namespace IQfPool:
 
     func get_current_project_id() -> (res: felt):
+    end
+
+    func get_project_by_id(project_id: felt) -> (res: ProjectReturn):
+    end
+
+    func get_all_projects() -> (res_len: felt, res: ProjectReturn*):
     end
 
     func get_erc20_addr() -> (res: felt):

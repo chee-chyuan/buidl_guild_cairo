@@ -28360,6 +28360,45 @@
                 "size": 2,
                 "type": "struct"
             },
+            "src.structs.project_struct.ProjectReturn": {
+                "full_name": "src.structs.project_struct.ProjectReturn",
+                "members": {
+                    "admin_latest_approved_percentage": {
+                        "cairo_type": "felt",
+                        "offset": 9
+                    },
+                    "ipfs_link_len": {
+                        "cairo_type": "felt",
+                        "offset": 0
+                    },
+                    "is_approved_latest_submission": {
+                        "cairo_type": "felt",
+                        "offset": 10
+                    },
+                    "owner": {
+                        "cairo_type": "felt",
+                        "offset": 1
+                    },
+                    "square_sum_c_sqrt": {
+                        "cairo_type": "starkware.cairo.common.uint256.Uint256",
+                        "offset": 6
+                    },
+                    "submission_ipfs_link_len": {
+                        "cairo_type": "felt",
+                        "offset": 8
+                    },
+                    "sum_c": {
+                        "cairo_type": "starkware.cairo.common.uint256.Uint256",
+                        "offset": 2
+                    },
+                    "sum_c_sqrt": {
+                        "cairo_type": "starkware.cairo.common.uint256.Uint256",
+                        "offset": 4
+                    }
+                },
+                "size": 11,
+                "type": "struct"
+            },
             "src.structs.project_struct.ProjectVerification": {
                 "full_name": "src.structs.project_struct.ProjectVerification",
                 "members": {

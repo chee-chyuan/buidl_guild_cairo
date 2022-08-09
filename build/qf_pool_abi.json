@@ -2,18 +2,48 @@
     {
         "members": [
             {
-                "name": "c",
+                "name": "ipfs_link_len",
                 "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "owner",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "sum_c",
+                "offset": 2,
                 "type": "Uint256"
             },
             {
-                "name": "c_sqrt",
-                "offset": 2,
+                "name": "sum_c_sqrt",
+                "offset": 4,
                 "type": "Uint256"
+            },
+            {
+                "name": "square_sum_c_sqrt",
+                "offset": 6,
+                "type": "Uint256"
+            },
+            {
+                "name": "submission_ipfs_link_len",
+                "offset": 8,
+                "type": "felt"
+            },
+            {
+                "name": "admin_latest_approved_percentage",
+                "offset": 9,
+                "type": "felt"
+            },
+            {
+                "name": "is_approved_latest_submission",
+                "offset": 10,
+                "type": "felt"
             }
         ],
-        "name": "ProjectVote",
-        "size": 4,
+        "name": "ProjectReturn",
+        "size": 11,
         "type": "struct"
     },
     {
@@ -31,6 +61,23 @@
         ],
         "name": "Uint256",
         "size": 2,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "c",
+                "offset": 0,
+                "type": "Uint256"
+            },
+            {
+                "name": "c_sqrt",
+                "offset": 2,
+                "type": "Uint256"
+            }
+        ],
+        "name": "ProjectVote",
+        "size": 4,
         "type": "struct"
     },
     {
@@ -158,6 +205,39 @@
             {
                 "name": "id",
                 "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "project_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_project_by_id",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "ProjectReturn"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_all_projects",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "ProjectReturn*"
             }
         ],
         "stateMutability": "view",

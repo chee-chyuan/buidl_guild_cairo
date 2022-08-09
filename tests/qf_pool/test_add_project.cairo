@@ -34,10 +34,13 @@ func test_add_project{
         pedersen_ptr : HashBuiltin*,
         range_check_ptr,
     }():
+    alloc_locals
     tempvar contract_address
     %{
         ids.contract_address = context.contract_address
     %}
+
+    local contract_address = contract_address
 
     let link_len = 3
     let (link) = alloc()
@@ -53,11 +56,11 @@ func test_add_project{
 
     IQfPool.add_project(contract_address=contract_address, owner=PROJECT_OWNER, ipfs_link_len=link_len, ipfs_link=link)
 
-    # revoked reference ==, and im too lazy to use local
-    tempvar contract_address
-    %{
-        ids.contract_address = context.contract_address
-    %}
+    # # revoked reference ==, and im too lazy to use local
+    # tempvar contract_address
+    # %{
+    #     ids.contract_address = context.contract_address
+    # %}
 
     let (current_id_after) = IQfPool.get_current_project_id(contract_address=contract_address)
     assert current_id_after = 2
@@ -78,14 +81,25 @@ func test_add_project{
     assert ipfs_link[1] = 'b'
     assert ipfs_link[2] = 'c'
 
-    # revoked reference ==, and im too lazy to use local
-    tempvar contract_address
-    %{
-        ids.contract_address = context.contract_address
-    %}
+    # # revoked reference ==, and im too lazy to use local
+    # tempvar contract_address
+    # %{
+    #     ids.contract_address = context.contract_address
+    # %}
 
     let (reverse_owner_project_id_after) = IQfPool.get_reverse_user_project_id(contract_address=contract_address, owner=PROJECT_OWNER)
     assert reverse_owner_project_id_after = 1
+
+    let (project_return) = IQfPool.get_project_by_id(contract_address=contract_address, project_id=1)
+    let (all_projects_len, all_projects) = IQfPool.get_all_projects(contract_address=contract_address)
+
+    assert all_projects[0].owner = project_return.owner
+
+    %{
+        print(f"all_projects_len: {ids.all_projects_len}")
+        # print(f"all_projects.owner: {memory[ids.all_projects]}"
+        print(f"project_return.owner: {ids.project_return.owner}")
+    %}
 
     return ()
 end

@@ -24,3 +24,15 @@ struct ProjectVerification:
     member admin_latest_approved_percentage: felt
     member is_approved_latest_submission: felt
 end
+
+# used to get all related info when returning
+struct ProjectReturn:
+    member ipfs_link_len: felt
+    member owner: felt
+    member sum_c: Uint256
+    member sum_c_sqrt: Uint256
+    member square_sum_c_sqrt: Uint256
+    member submission_ipfs_link_len: felt
+    member admin_latest_approved_percentage: felt
+    member is_approved_latest_submission: felt
+end
