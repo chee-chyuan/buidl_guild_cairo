@@ -244,6 +244,24 @@ func get_all_user_buidl_internal{
     return (res_len, res)
 end
 
+@view 
+func get_user_buidl_ipfs_full{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+    }(
+        user_addr: felt, 
+        buidl_id: felt
+    ) -> (res_len: felt, res: felt*):
+
+    let (info) = user_buidl.read(user_addr, buidl_id)
+    let length = info.ipfs_link_len
+    let (link: felt*) = alloc()
+    let (res_len, res) = get_user_buidl_ipfs(user_addr, buidl_id, 0, length, 0, link)
+
+    return (res_len, res)
+end
+
 @view
 func get_user_buidl_ipfs{
         syscall_ptr : felt*,

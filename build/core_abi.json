@@ -278,6 +278,31 @@
             {
                 "name": "buidl_id",
                 "type": "felt"
+            }
+        ],
+        "name": "get_user_buidl_ipfs_full",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "felt*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "user_addr",
+                "type": "felt"
+            },
+            {
+                "name": "buidl_id",
+                "type": "felt"
             },
             {
                 "name": "current_index",
