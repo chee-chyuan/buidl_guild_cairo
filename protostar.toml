@@ -27,3 +27,7 @@ core = [
 qf_pool = [
     "src/qf_pool.cairo",
 ]
+
+user_registry = [
+    "src/user_registry.cairo"
+]

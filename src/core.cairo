@@ -456,8 +456,8 @@ func admin_verify_work{
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
 }(pool_id: felt, project_id: felt, approved_percentage: felt):
+    alloc_locals
     Ownable.assert_only_owner()
-
      # check pool id exist
     let (pool_addr) = pool_address.read(pool_id=pool_id)
     local pool_addr = pool_addr
@@ -477,11 +477,13 @@ func claim{
     range_check_ptr,
 }(pool_id: felt, owner: felt):
     # check pool id exist
+    alloc_locals
     let (pool_addr) = pool_address.read(pool_id=pool_id)
     local pool_addr = pool_addr
     assert_not_zero(pool_addr)
 
     IQfPool.claim(contract_address=pool_addr, project_owner=owner)
+    return ()
 end
 
 func assert_user_is_registered{

@@ -1,0 +1,20 @@
+{
+    "starknet_requests": [
+        {
+            "action": "DECLARE",
+            "payload": {
+                "contract": "/Users/cheechyuan/Documents/repo/buidl_guild_cairo/build/qf_pool.json",
+                "sender_address": 1,
+                "max_fee": 0,
+                "version": 0,
+                "signature": [],
+                "nonce": 0
+            },
+            "response": {
+                "code": "TRANSACTION_RECEIVED",
+                "class_hash": 2168453678769241900924101818566157360069318565995279432001515296538845781174,
+                "transaction_hash": "0x1bc8b2f6270cb0e023a5789044cf9f1a62dca8bd3974338c21ce62af8eb8a44"
+            }
+        }
+    ]
+}

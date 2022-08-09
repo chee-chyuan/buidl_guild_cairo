@@ -78,6 +78,10 @@
             {
                 "name": "erc20_addr_",
                 "type": "felt"
+            },
+            {
+                "name": "admin",
+                "type": "felt"
             }
         ],
         "name": "constructor",
@@ -374,6 +378,59 @@
             }
         ],
         "name": "vote",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "pool_id",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs",
+                "type": "felt*"
+            }
+        ],
+        "name": "submit_work_proof",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "pool_id",
+                "type": "felt"
+            },
+            {
+                "name": "project_id",
+                "type": "felt"
+            },
+            {
+                "name": "approved_percentage",
+                "type": "felt"
+            }
+        ],
+        "name": "admin_verify_work",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "pool_id",
+                "type": "felt"
+            },
+            {
+                "name": "owner",
+                "type": "felt"
+            }
+        ],
+        "name": "claim",
         "outputs": [],
         "type": "function"
     }

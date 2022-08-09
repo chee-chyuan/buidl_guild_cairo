@@ -564,7 +564,7 @@
     },
     {
         "inputs": [],
-        "name": "get_time_as_percentage",
+        "name": "get_time_as_percentage2",
         "outputs": [
             {
                 "name": "res",
@@ -585,7 +585,7 @@
                 "type": "felt"
             }
         ],
-        "name": "get_time_as_percentage2",
+        "name": "get_time_as_percentage",
         "outputs": [
             {
                 "name": "res",

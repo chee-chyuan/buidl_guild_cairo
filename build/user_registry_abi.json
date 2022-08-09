@@ -1,0 +1,85 @@
+[
+    {
+        "members": [
+            {
+                "name": "prefix",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "suffix",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "github_username",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "inputs": [],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "name": "sender_address",
+                "type": "felt"
+            }
+        ],
+        "name": "check_user_registered",
+        "outputs": [
+            {
+                "name": "is_registered",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_user_info",
+        "outputs": [
+            {
+                "name": "github",
+                "type": "github_username"
+            },
+            {
+                "name": "ipfs_url_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_url",
+                "type": "felt*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "github_prefix",
+                "type": "felt"
+            },
+            {
+                "name": "github_suffix",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_url_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_url",
+                "type": "felt*"
+            }
+        ],
+        "name": "register",
+        "outputs": [],
+        "type": "function"
+    }
+]
