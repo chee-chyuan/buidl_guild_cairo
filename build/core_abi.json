@@ -243,10 +243,6 @@
             {
                 "name": "user_addr",
                 "type": "felt"
-            },
-            {
-                "name": "length",
-                "type": "felt"
             }
         ],
         "name": "get_all_user_buidl",
