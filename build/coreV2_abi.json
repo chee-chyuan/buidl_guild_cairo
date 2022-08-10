@@ -328,6 +328,23 @@
     {
         "inputs": [
             {
+                "name": "buidl_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_builds_by_id",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "BuidlInfo"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "name": "current_index",
                 "type": "felt"
             },
@@ -377,6 +394,81 @@
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            },
+            {
+                "name": "pool_id",
+                "type": "felt"
+            }
+        ],
+        "name": "add_buidl_to_pool",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs",
+                "type": "felt*"
+            }
+        ],
+        "name": "submit_work_proof",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "build_id",
+                "type": "felt"
+            },
+            {
+                "name": "approved_percentage",
+                "type": "felt"
+            }
+        ],
+        "name": "admin_verify_work",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "build_id",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            }
+        ],
+        "name": "vote",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            }
+        ],
+        "name": "claim",
+        "outputs": [],
         "type": "function"
     }
 ]

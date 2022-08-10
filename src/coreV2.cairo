@@ -1,10 +1,13 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.math import assert_not_zero
 from starkware.cairo.common.alloc import alloc
 from starkware.starknet.common.syscalls import get_caller_address, get_contract_address, deploy
 from structs.buidl_struct_v2 import BuidlInfo, PoolInfo, PoolReadInfo
+from starkware.cairo.common.uint256 import Uint256
 from openzeppelin.access.ownable.library import Ownable
+from openzeppelin.token.erc20.IERC20 import IERC20
 from interfaces.IUserRegistrar import IUserRegistrar
 from interfaces.IQfPool import IQfPool
 
@@ -412,7 +415,7 @@ func add_buidl_to_pool{
 
     # check pool id exist
     let (_pool_info) = pool_info.read(pool_id=pool_id)
-    local _pool_info = _pool_info
+    local _pool_info: PoolInfo = _pool_info
     assert_not_zero(_pool_info.address)
 
     # check if buidl is correct
@@ -429,7 +432,7 @@ func add_buidl_to_pool{
                             contract_address=_pool_info.address,
                             owner=caller,
                             ipfs_link_len=_buidl_info.ipfs_link_len,
-                            ipfs_link=ipfs_res
+                            ipfs_link=ipfs
                             )
 
     # override buidl in global
@@ -476,7 +479,7 @@ func admin_verify_work{
     alloc_locals
     Ownable.assert_only_owner()
 
-    let (build) = buidls.read(buidl_id)
+    let (build) = buidls.read(build_id)
      # check pool id exist
     with_attr error_message("Build doesnt have a pool"):
         assert_not_zero(build.pool_addr)
@@ -500,7 +503,7 @@ func vote{
     let (caller) = get_caller_address()
     assert_user_is_registered(caller)
 
-    let (build) = buidls.read(buidl_id)
+    let (build) = buidls.read(build_id)
      # check pool id exist
     with_attr error_message("Build doesnt have a pool"):
         assert_not_zero(build.pool_addr)
