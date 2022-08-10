@@ -446,15 +446,106 @@ func add_buidl_to_pool{
     return ()
 end
 
-
 # user submit proof of work (lol)
+@external
+func submit_work_proof{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(buidl_id: felt, ipfs_len: felt, ipfs: felt*):
+    alloc_locals
+    # check if user is registered to prevent QF from being gamed
+    let (caller) = get_caller_address()
+    assert_user_is_registered(caller)
+
+    let (build) = buidls.read(buidl_id)
+    assert build.user_addr = caller
+    assert_not_zero(build.pool_id)
+
+    IQfPool.submit_work_proof(contract_address=build.pool_addr, project_owner=caller, ipfs_len=ipfs_len, ipfs=ipfs)
+    return ()
+end
 
 # admin approve progress
+@external
+func admin_verify_work{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(build_id: felt, approved_percentage: felt):
+    alloc_locals
+    Ownable.assert_only_owner()
+
+    let (build) = buidls.read(buidl_id)
+     # check pool id exist
+    with_attr error_message("Build doesnt have a pool"):
+        assert_not_zero(build.pool_addr)
+    end
+
+    IQfPool.admin_verify_work(contract_address=build.pool_addr, project_id=build.project_id, approved_percentage=approved_percentage)
+
+    return ()
+end
 
 # vote
 
-# claim
+@external 
+func vote{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(build_id: felt, amount: Uint256):
+    alloc_locals
+    # check if user is registered to prevent QF from being gamed
+    let (caller) = get_caller_address()
+    assert_user_is_registered(caller)
 
+    let (build) = buidls.read(buidl_id)
+     # check pool id exist
+    with_attr error_message("Build doesnt have a pool"):
+        assert_not_zero(build.pool_addr)
+    end
+
+    # # check pool id exist
+    # let (pool_addr) = pool_address.read(pool_id=pool_id)
+    # local pool_addr = pool_addr
+    # with_attr error_message("Invalid Pool Id"):
+    #     assert_not_zero(pool_addr)
+    # end
+
+    # transfer erc20 to pool
+    let (erc20_addr) = token_address.read()
+    let (transfer_res) = IERC20.transferFrom(contract_address=erc20_addr,
+                        sender=caller,
+                        recipient=build.pool_addr,
+                        amount=amount)
+
+    with_attr error_message("Transfer Erc20 fail"):
+        assert transfer_res = 1
+    end
+
+    # vote
+    IQfPool.vote(contract_address=build.pool_addr, project_id=build.project_id, amount=amount, voter_addr=caller)
+
+    return ()
+end
+
+# claim
+@external
+func claim{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(buidl_id: felt):
+    let (build) = buidls.read(buidl_id)
+     # check pool id exist
+    with_attr error_message("Build doesnt have a pool"):
+        assert_not_zero(build.pool_addr)
+    end
+
+    IQfPool.claim(contract_address=build.pool_addr, project_owner=build.user_addr)
+    return ()
+end
 
 func assert_user_is_registered{
     syscall_ptr : felt*,
