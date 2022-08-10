@@ -96,6 +96,43 @@
         "type": "struct"
     },
     {
+        "members": [
+            {
+                "name": "ipfs_link_len",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "pool_id",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "pool_addr",
+                "offset": 2,
+                "type": "felt"
+            },
+            {
+                "name": "project_id",
+                "offset": 3,
+                "type": "felt"
+            },
+            {
+                "name": "buidl_id",
+                "offset": 4,
+                "type": "felt"
+            },
+            {
+                "name": "user_addr",
+                "offset": 5,
+                "type": "felt"
+            }
+        ],
+        "name": "BuidlInfo",
+        "size": 6,
+        "type": "struct"
+    },
+    {
         "data": [
             {
                 "name": "previousOwner",
@@ -259,6 +296,87 @@
         ],
         "name": "deploy_pool",
         "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs",
+                "type": "felt*"
+            }
+        ],
+        "name": "add_buidl",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_current_build_count",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "current_index",
+                "type": "felt"
+            },
+            {
+                "name": "total_length",
+                "type": "felt"
+            },
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "BuidlInfo*"
+            }
+        ],
+        "name": "get_all_builds",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "BuidlInfo*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "buidl_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_build_ipfs",
+        "outputs": [
+            {
+                "name": "ipfs_len",
+                "type": "felt"
+            },
+            {
+                "name": "ipfs",
+                "type": "felt*"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     }
 ]
