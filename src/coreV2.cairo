@@ -302,6 +302,18 @@ func get_current_build_count{
     return (res=res)
 end
 
+@view
+func get_builds_by_id{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(
+    buidl_id: felt
+) -> (res: BuidlInfo):
+    let (build) = buidls.read(buidl_id)
+    return (build)
+end
+
 # get all buidl
 @view
 func get_all_builds{
