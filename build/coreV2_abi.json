@@ -1,0 +1,264 @@
+[
+    {
+        "members": [
+            {
+                "name": "address",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "vote_start_time",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "vote_end_time",
+                "offset": 2,
+                "type": "felt"
+            },
+            {
+                "name": "stream_start_time",
+                "offset": 3,
+                "type": "felt"
+            },
+            {
+                "name": "stream_end_time",
+                "offset": 4,
+                "type": "felt"
+            }
+        ],
+        "name": "PoolInfo",
+        "size": 5,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "address",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "vote_start_time",
+                "offset": 1,
+                "type": "felt"
+            },
+            {
+                "name": "vote_end_time",
+                "offset": 2,
+                "type": "felt"
+            },
+            {
+                "name": "stream_start_time",
+                "offset": 3,
+                "type": "felt"
+            },
+            {
+                "name": "stream_end_time",
+                "offset": 4,
+                "type": "felt"
+            },
+            {
+                "name": "total_matched",
+                "offset": 5,
+                "type": "Uint256"
+            },
+            {
+                "name": "total_divisor",
+                "offset": 7,
+                "type": "Uint256"
+            },
+            {
+                "name": "total_project_contributed_fund",
+                "offset": 9,
+                "type": "Uint256"
+            }
+        ],
+        "name": "PoolReadInfo",
+        "size": 11,
+        "type": "struct"
+    },
+    {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "data": [
+            {
+                "name": "previousOwner",
+                "type": "felt"
+            },
+            {
+                "name": "newOwner",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "contract_hash",
+                "type": "felt"
+            },
+            {
+                "name": "user_registrar_",
+                "type": "felt"
+            },
+            {
+                "name": "erc20_addr_",
+                "type": "felt"
+            },
+            {
+                "name": "admin",
+                "type": "felt"
+            }
+        ],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "get_admin",
+        "outputs": [
+            {
+                "name": "admin",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_pool_contract_hash",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_salt",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_token_address",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_user_registrar",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_current_pool_length",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "pool_id",
+                "type": "felt"
+            }
+        ],
+        "name": "get_pool_info_by_pool_id",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "PoolInfo"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_all_pools",
+        "outputs": [
+            {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
+                "name": "res",
+                "type": "PoolReadInfo*"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "vote_start_time_",
+                "type": "felt"
+            },
+            {
+                "name": "vote_end_time_",
+                "type": "felt"
+            },
+            {
+                "name": "stream_start_time_",
+                "type": "felt"
+            },
+            {
+                "name": "stream_end_time_",
+                "type": "felt"
+            }
+        ],
+        "name": "deploy_pool",
+        "outputs": [],
+        "type": "function"
+    }
+]

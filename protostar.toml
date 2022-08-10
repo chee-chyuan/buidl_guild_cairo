@@ -24,6 +24,10 @@ core = [
     "src/core.cairo",
 ]
 
+coreV2 = [
+    "src/coreV2.cairo",
+]
+
 qf_pool = [
     "src/qf_pool.cairo",
 ]
