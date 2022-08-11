@@ -324,10 +324,6 @@ func get_all_builds{
     pedersen_ptr : HashBuiltin*,
     range_check_ptr,
 }(
-    current_index: felt, 
-    total_length: felt, 
-    res_len: felt, 
-    res: BuidlInfo*
 ) -> (res_len: felt, res: BuidlInfo*): 
     let (len) = total_buidl.read()
     let (info: BuidlInfo*) = alloc()
