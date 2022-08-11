@@ -546,6 +546,36 @@ func claim{
     return ()
 end
 
+@external
+func admin_init_matched_fund_in_pool{
+    syscall_ptr : felt*,
+    pedersen_ptr : HashBuiltin*,
+    range_check_ptr,
+}(pool_id: felt, amount: Uint256):
+    alloc_locals
+    Ownable.assert_only_owner()
+
+    # check pool id exist
+    let (pool) = pool_info.read(pool_id)
+    assert_not_zero(pool.address)
+
+    # transfer erc20 to pool
+    let (erc20_addr) = token_address.read()
+    let (caller) = get_caller_address()
+    let (transfer_res) = IERC20.transferFrom(contract_address=erc20_addr,
+                        sender=caller,
+                        recipient=pool.address,
+                        amount=amount)
+
+    with_attr error_message("Transfer Erc20 fail"):
+        assert transfer_res = 1
+    end
+
+    IQfPool.init_matched_pool(contract_address=pool.address)
+
+    return ()
+end
+
 func assert_user_is_registered{
     syscall_ptr : felt*,
     pedersen_ptr : HashBuiltin*,
