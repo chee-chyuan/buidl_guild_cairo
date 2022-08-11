@@ -453,5 +453,20 @@
         "name": "claim",
         "outputs": [],
         "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "pool_id",
+                "type": "felt"
+            },
+            {
+                "name": "amount",
+                "type": "Uint256"
+            }
+        ],
+        "name": "admin_init_matched_fund_in_pool",
+        "outputs": [],
+        "type": "function"
     }
 ]
