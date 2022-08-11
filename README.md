@@ -18,10 +18,12 @@ To reduce the risk of donars gaming the quadratic funding mechanism by creating 
 ### Claiming
 After the voting period ends, project owners will be able to claim their donations in a streamed fashion. The total amount will be distributed gradually over time. On top of that, from time to time, project owners will be required to submit a project report through IPFS, to allow admin to verify if actual progress has been made. The admin will be able to limit how much of the final amount the project should have gotten in the case where the progress has not reached the milestone
 
+## Decentralized File Storage
+IPFS is being used for all of our file storage system which includes project info, user details, progress report. We believe that storage data in a decentralized manner will ensure for a good data availability
 
 ## Technology Used
 - We are building our project on Starknet and the backend is written entirely on Cairo
-- For a decnetralized file storage option, we leverage IPFS that allows us to store project info, user details, progress report in a decentralized manner.
+- For a decentralized file storage option, we leverage IPFS that allows us to store project info, user details, progress report in a decentralized manner.
 
 ## Contracts
 - `user_registration.cairo` - Handles all user related logics, such as user registration, unique github id check
