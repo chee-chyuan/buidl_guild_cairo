@@ -1,0 +1,55 @@
+{
+    "starknet_requests": [
+        {
+            "action": "DECLARE",
+            "payload": {
+                "contract": "/Users/cheechyuan/Documents/repo/buidl_guild_cairo/build/qf_pool.json",
+                "sender_address": 1,
+                "max_fee": 0,
+                "version": 0,
+                "signature": [],
+                "nonce": 0
+            },
+            "response": {
+                "code": "TRANSACTION_RECEIVED",
+                "class_hash": 2215444320632309045180507423059767143612550742472265785717143182886621592582,
+                "transaction_hash": "0x85e2d5e12348b4a223210eaad8f54782d381a8159ad14d6e0ecf470d8c8c5f"
+            }
+        },
+        {
+            "action": "DEPLOY",
+            "payload": {
+                "contract": "/Users/cheechyuan/Documents/repo/buidl_guild_cairo/build/user_registry.json",
+                "gateway_url": "https://alpha4.starknet.io/gateway",
+                "constructor_args": null,
+                "salt": null,
+                "token": null
+            },
+            "response": {
+                "code": "TRANSACTION_RECEIVED",
+                "address": 1341862955100956267583952150439163651482822416321518275818422762871568907783,
+                "transaction_hash": "0x5ad59325181832d7baaaed4b9b32386d1405af9769af5034e591519c1672803"
+            }
+        },
+        {
+            "action": "DEPLOY",
+            "payload": {
+                "contract": "/Users/cheechyuan/Documents/repo/buidl_guild_cairo/build/coreV2.json",
+                "gateway_url": "https://alpha4.starknet.io/gateway",
+                "constructor_args": [
+                    2215444320632309045180507423059767143612550742472265785717143182886621592582,
+                    1341862955100956267583952150439163651482822416321518275818422762871568907783,
+                    -1531481363943511436577813308151597459855447218982827121852527537121361113658,
+                    451599388488372420441116084417277127504010690560639326384514568067339491613
+                ],
+                "salt": null,
+                "token": null
+            },
+            "response": {
+                "code": "TRANSACTION_RECEIVED",
+                "address": 2920708189675010270295036440467453563815671604731663114332961112723692442197,
+                "transaction_hash": "0x45df3c3471ed29c98b2de6473d71cf3ffb44cc920c4b3612dbf13e5f4d75c0f"
+            }
+        }
+    ]
+}
