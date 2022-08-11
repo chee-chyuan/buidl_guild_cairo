@@ -23,6 +23,11 @@ After the voting period ends, project owners will be able to claim their donatio
 - We are building our project on Starknet and the backend is written entirely on Cairo
 - For a decnetralized file storage option, we leverage IPFS that allows us to store project info, user details, progress report in a decentralized manner.
 
+## Contracts
+- `user_registration.cairo` - Handles all user related logics, such as user registration, unique github id check
+- `qf_pool.cairo` - The main logic of the matching pool that contains logic such as QF calculation, Streaming amount logic. This contract will be deployed as a contract class and will be deploy over and over again for a new pool. 
+- `coreV2.cairo` - Act as a bridge between user registration and the matching pool. Also contains logic where only admin is able to create a new matching pool.
+
 ## Deploy
 In `migrations/migration_01_init.cairo` change 
 ```
