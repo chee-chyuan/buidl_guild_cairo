@@ -41,11 +41,9 @@ func check_user_registered{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ran
 end
 
 @view
-func get_user_info{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
+func get_user_info{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(sender_address : felt) -> (
         github : github_username, ipfs_url_len : felt, ipfs_url : felt*):
-
     alloc_locals
-    let (sender_address) = get_caller_address()
     let (ipfs_url_len) = user_ipfs_len.read(sender_address)
     let (ipfs_url) = alloc()
     read_ipfs(sender_address,ipfs_url_len,ipfs_url)
@@ -123,5 +121,4 @@ func assert_github_link_available{
     
     return ()
 end
-
 
