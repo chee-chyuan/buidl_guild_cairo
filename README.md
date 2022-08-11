@@ -1,5 +1,5 @@
 # StarkGuild
-An EthSeoul Hackathon project proudly brought to you by Carlos Ramos, Jian Kim, WenKang Chen and CheeChyuan Ang
+An EthSeoul Hackathon project proudly brought to you by Carlos Ramos, Jian Kim, WenKang Chen and CheeChyuan Ang. We hope to launch really soon!
 
 ## Introduction
 StarkGuild is a public goods project that is aimed towards promoting public goods! It is a platform that allows aspiring buidlers to submit a project proposal to a matching round in return for a potential grant from the community.
