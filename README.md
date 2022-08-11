@@ -31,6 +31,12 @@ After the voting period ends, project owners will be able to claim their donatio
 ## Frontend
 The frontend repo can be found [here](https://github.com/jrcarlos2000/StarknetBuildGuild)
 
+## Tech Stack
+- Main Cairo development and testing done using Protostar
+- Frontend - Next.js, Starknet-react, Starknet.js
+- Deployment + Testing on Local host- Starknet Hardhat, Starknet Devnet
+
+
 ## Deploy
 In `migrations/migration_01_init.cairo` change 
 ```
